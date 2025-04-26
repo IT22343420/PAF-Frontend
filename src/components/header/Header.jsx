@@ -39,7 +39,7 @@ function Header() {
           onClick={() => navigate("/profile")}
         />
         <Nav>
-        <Button as={Link} to="/addPost" variant="primary">
+        <Button as={Link} to="/addPost" variant="primary" style={{marginLeft: "20px"}}>
                             Add New Post
                         </Button>
         </Nav>
