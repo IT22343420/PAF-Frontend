@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import SinglePost from "./singlePost";
-import PostService from "../api/postService";
+import PostService from "../services/postService";
+
 
 const Posts = () => {
     const [posts, setPosts] = useState([]);

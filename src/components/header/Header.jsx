@@ -4,9 +4,9 @@ import { GoHomeFill } from "react-icons/go";
 import { MdNotificationsActive } from "react-icons/md";
 import { FaUserCircle } from "react-icons/fa";
 import { FaSearch } from "react-icons/fa";
-
+import { Button, Nav } from "react-bootstrap"
 import { useLocation, useNavigate } from "react-router-dom";
-
+import { Link } from "react-router-dom";
 function Header() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -38,6 +38,12 @@ function Header() {
           } hover:text-indigo-600`}
           onClick={() => navigate("/profile")}
         />
+        <Nav>
+        <Button as={Link} to="/addPost" variant="primary">
+                            Add New Post
+                        </Button>
+        </Nav>
+        
       </div>
     </div>
   );
