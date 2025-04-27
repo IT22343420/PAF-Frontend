@@ -91,6 +91,12 @@ const SinglePlanView = () => {
                 <span style={{ color: '#4b5563' }}>
                   Complete Date: {plan.completedate ? plan.completedate.slice(0, 10) : ''}
                 </span>
+                <span style={{ color: '#4b5563' }}>
+                  Created: {plan.createddate ? plan.createddate.slice(0, 10) : ''}
+                </span>
+                <span style={{ color: '#4b5563' }}>
+                  Last Updated: {plan.updateddate ? plan.updateddate.slice(0, 10) : ''}
+                </span>
                 <span style={{
                   padding: '4px 12px',
                   borderRadius: '16px',

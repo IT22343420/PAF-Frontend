@@ -18,7 +18,7 @@ const convertToBackendFormat = (plan) => {
     status: plan.status === 'Completed', // Convert string status to boolean
     targetdate: plan.topics?.[0]?.targetDate || plan.targetdate, // Take first topic target date or plan target date
     createddate: plan.createddate,
-    updateddate: new Date().toISOString()
+    updateddate: plan.updateddate || new Date().toISOString() // Only set new date if not already present
   };
 };
 
