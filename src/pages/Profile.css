@@ -1,0 +1,56 @@
+.profile-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.ant-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ant-card-head {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.ant-card-head-title {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.profile-info {
+  padding: 24px;
+}
+
+.profile-info p {
+  margin-bottom: 16px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.profile-info strong {
+  color: #1890ff;
+  margin-right: 8px;
+}
+
+.ant-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.ant-space {
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.ant-btn {
+  margin-left: 8px;
+}
+
+.ant-modal-confirm-body .ant-modal-confirm-title {
+  color: #ff4d4f;
+}
+
+.ant-modal-confirm-body .ant-modal-confirm-content {
+  margin-top: 8px;
+} 
