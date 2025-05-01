@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { getAllProgress } from "../../services/progressService";
 
+import { BiSolidLike } from "react-icons/bi";
+import { BiSolidCommentDots } from "react-icons/bi";
+
 import profile from "../../images/profile.jpg";
 
 function Progress() {
@@ -58,9 +61,15 @@ function Progress() {
                     {progress.createdAt?.substring(0, 10)}
                   </span>
                 </div>
-                <div>
-                  <button>like</button>
-                  <button>comment</button>
+                <div className="flex gap-4 mt-2">
+                  <button className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-2 rounded-2xl shadow-md transition-all duration-300">
+                    <BiSolidLike className="w-5 h-5" />
+                   
+                  </button>
+                  <button className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-2 rounded-2xl shadow-md transition-all duration-300">
+                    <BiSolidCommentDots className="w-5 h-5" />
+                    
+                  </button>
                 </div>
               </div>
             </div>
