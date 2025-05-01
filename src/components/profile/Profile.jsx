@@ -40,7 +40,7 @@ function Profile() {
             }`
           }
         >
-          learning progress
+          Learning progress
         </NavLink>
 
         <NavLink
@@ -53,7 +53,7 @@ function Profile() {
             }`
           }
         >
-          my course
+          My course
         </NavLink>
 
         <NavLink
@@ -66,7 +66,20 @@ function Profile() {
             }`
           }
         >
-          setting
+          Learnning plan
+        </NavLink>
+
+        <NavLink
+          to="/profile/sample3"
+          className={({ isActive }) =>
+            `flex justify-center items-center p-2 border-2 border-indigo-600 font-bold rounded-md ml-5 ${
+              isActive
+                ? "text-white bg-indigo-600 hover:bg-indigo-500 hover:text-white "
+                : "text-gray-600 hover:text-indigo-600 "
+            }`
+          }
+        >
+          My badges
         </NavLink>
       </div>
 
