@@ -21,8 +21,8 @@ function Progress() {
   };
 
   return (
-    <div className="flex flex-col py-8 px-4">
-      <h1 className="text-2xl font-bold mb-6">Feed</h1>
+    <div className="flex flex-col pt-2">
+      <p className="text-xl font-bold mb-4">community learnning</p>
 
       {progressList.length === 0 ? (
         <p className="text-center text-gray-500">No learning progress yet.</p>
