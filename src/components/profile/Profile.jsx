@@ -33,7 +33,7 @@ function Profile() {
         <NavLink
           to="/profile/learning"
           className={({ isActive }) =>
-            `flex justify-center items-center p-2 border-2 border-indigo-600 font-bold rounded-md ${
+            `flex justify-center items-center p-2 border-2 border-indigo-600 font-bold rounded-md no-underline ${
               isActive
                 ? "text-white bg-indigo-600 hover:bg-indigo-500 hover:text-white "
                 : "text-gray-600 hover:text-indigo-600 "
