@@ -17,7 +17,7 @@ const SinglePost = ({ post, profileImage, onDelete }) => {
     };
 
     const handleEdit = () => {
-        navigate(`/edit-post/${id}`);
+        navigate(`/editPost/${id}`);
     };
 
     const handleDelete = async () => {
