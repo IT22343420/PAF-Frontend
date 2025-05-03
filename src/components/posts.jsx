@@ -23,32 +23,19 @@ const Posts = () => {
         };
         getPosts();
       }, []);
+
+    const handleDelete = (postId) => {
+        setPosts(posts.filter(post => post.id !== postId));
+    }
     return (
         <Container>
-            <Row className="justify-content-between">
-                <Col md={8} className="mb-4 mt-4">
-                </Col>
-                <Col md={4} className="mt-4 float-right">
-                    <Card>
-                        <Card.Body>
-                            <Card.Title>All Posts</Card.Title>
-                            <ul className="list-unstyled">
-                                {posts.map((post, idx) => (
-                                    <li key={idx}>
-                                        <a href={`#post-${idx}`}>{post.title}</a>
-                                    </li>
-                                ))}
-                            </ul>
-                        </Card.Body>
-                    </Card>
-                </Col>
+            <Row className="justify-content-center">
                 {posts.map((post, idx) => (
-                    <Col md={8} className="mb-4" key={idx}>
+                    <Col md={10} className="mb-4" key={idx}>
                         <SinglePost
-                            image={post.filePath}
-                            title={post.title}
-                            text={post.description}
-                            userName={post.userName}
+                            post={post}
+                            onDelete={() => handleDelete(post.id)}
+                            profileImage={'/profileImages/1.jpeg'}
                         />
                     </Col>
                 ))}
