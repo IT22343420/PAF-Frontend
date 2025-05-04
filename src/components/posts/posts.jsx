@@ -5,7 +5,7 @@ import PostService from "../../services/postService";
 import StartPost from "./startPost";
 
 
-const Posts = () => {
+const Posts = ({onSetNotification}) => {
     const [posts, setPosts] = useState([]);
 
     useEffect(() => {
@@ -27,6 +27,10 @@ const Posts = () => {
 
     const handleDelete = (postId) => {
         setPosts(posts.filter(post => post.id !== postId));
+        onSetNotification({
+            message: 'Post deleted successfully!',
+            type: 'success'
+        });
     }
     return (
         <Container>
@@ -37,6 +41,7 @@ const Posts = () => {
                         <SinglePost
                             post={post}
                             onDelete={() => handleDelete(post.id)}
+                            onSetNotification={onSetNotification}
                             profileImage={'/profileImages/1.jpeg'}
                         />
                     </Col>

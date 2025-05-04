@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Button, Container, Image, Row, Col } from 'react-bootstrap';
+import Notification from '../components/common/Notification';
 
 import { useNavigate } from "react-router-dom";
 import PostService from '../services/postService';
@@ -13,12 +14,16 @@ const AddPost = () => {
   const [previews, setPreviews] = useState([]);
   const [tags, setTags] = useState([]);
   const [currentTag, setCurrentTag] = useState('');
+  const [notification, setNotification] = useState(null);
   const navigate = useNavigate();
 
   const handleMediaChange = (e) => {
     const files = Array.from(e.target.files);
     if (files.length + mediaFiles.length > 3) {
-      alert('You can only upload up to 3 files');
+      setNotification({
+        message: 'You can only upload up to 3 files',
+        type: 'danger'
+      });
       return;
     }
 
@@ -71,8 +76,13 @@ const AddPost = () => {
     });
 
     await PostService.addPost(formData);
-    navigate("/posts");
-    alert('Post submitted!');
+    setNotification({
+      message: 'Post submitted!',
+      type: 'success'
+    });
+    setTimeout(() => {
+      navigate("/posts");
+    }, 1500);
   };
 
   const handleAddTag = (e) => {
@@ -89,6 +99,13 @@ const AddPost = () => {
 
   return (
     <Container style={{ maxWidth: 600, marginTop: 40 }}>
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
+      )}
       <h2 className="mb-4">Add a New Post</h2>
       <Form onSubmit={handleSubmit}>
         <Form.Group controlId="formUserName" className="mb-3">

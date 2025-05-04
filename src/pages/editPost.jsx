@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Button, Container, Image, Row, Col } from 'react-bootstrap';
 import { useParams, useNavigate } from "react-router-dom";
 import PostService from '../services/postService';
+import Notification from '../components/common/Notification';
 
 const EditPost = () => {
     const { id } = useParams();
@@ -16,6 +17,7 @@ const EditPost = () => {
     const [tags, setTags] = useState([]);
     const [currentTag, setCurrentTag] = useState('');
     const [existingFilePaths, setExistingFilePaths] = useState([]);
+    const [notification, setNotification] = useState(null);
 
     useEffect(() => {
         const fetchPost = async () => {
@@ -30,7 +32,10 @@ const EditPost = () => {
                 setExistingFilePaths(post.filePaths || []);
             } catch (error) {
                 console.error('Error fetching post:', error);
-                alert('Failed to load post. Please try again.');
+                setNotification({
+                    message: 'Failed to load post. Please try again.',
+                    type: 'danger'
+                });
             }
         };
 
@@ -40,7 +45,10 @@ const EditPost = () => {
     const handleMediaChange = (e) => {
         const files = Array.from(e.target.files);
         if (files.length + existingFilePaths.length + mediaFiles.length > 3) {
-            alert('You can only upload up to 3 files');
+            setNotification({
+                message: 'You can only upload up to 3 files',
+                type: 'danger'
+            });
             return;
         }
 
@@ -75,7 +83,10 @@ const EditPost = () => {
             setExistingFilePaths(newFilePaths);
         } catch (error) {
             console.error('Error removing media:', error);
-            alert('Failed to remove media. Please try again.');
+            setNotification({
+                message: 'Failed to remove media. Please try again.',
+                type: 'danger'
+            });
         }
     };
 
@@ -126,21 +137,34 @@ const EditPost = () => {
                 formData.append(`mediaFile${index}`, file);
                 index++;
             });
-
             // Wait for all existing files to be processed
             await Promise.all(existingFilesPromises);
-
             await PostService.updatePost(id, formData);
-            navigate("/posts");
-            alert('Post updated successfully!');
+            setNotification({
+                message: 'Post updated successfully!',
+                type: 'success'
+            });
+            setTimeout(() => {
+                navigate("/posts");
+            }, 1500);
         } catch (error) {
             console.error('Error updating post:', error);
-            alert('Failed to update post. Please try again.');
+            setNotification({
+                message: 'Failed to update post. Please try again.',
+                type: 'danger'
+            });
         }
     };
 
     return (
         <Container style={{ maxWidth: 600, marginTop: 40 }}>
+            {notification && (
+                <Notification
+                    message={notification.message}
+                    type={notification.type}
+                    onClose={() => setNotification(null)}
+                />
+            )}
             <h2 className="mb-4">Edit Post</h2>
             <Form onSubmit={handleSubmit}>
                 <Form.Group controlId="formUserName" className="mb-3">

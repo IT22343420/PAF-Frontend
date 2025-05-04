@@ -1,13 +1,12 @@
 import React from 'react';
 import { Card, Button, Row, Col, Badge, Carousel } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { PencilSquare, Trash, Heart, Chat } from 'react-bootstrap-icons';
 import PostService from '../../services/postService';
 
-const SinglePost = ({ post, profileImage, onDelete }) => {
+const SinglePost = ({ post, profileImage, onDelete, onSetNotification }) => {
     const { id, userName, headline, title, description, filePaths, tags, createdAt } = post;
     const navigate = useNavigate();
-
     const handleLike = () => {
         console.log('Like button clicked');
     };
@@ -29,7 +28,10 @@ const SinglePost = ({ post, profileImage, onDelete }) => {
                 }
             } catch (error) {
                 console.error('Error deleting post:', error);
-                alert('Failed to delete post. Please try again.');
+                onSetNotification({
+                    message: 'Failed to delete post. Please try again.',
+                    type: 'danger'
+                });
             }
         }
     };
