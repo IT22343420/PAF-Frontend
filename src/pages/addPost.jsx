@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Form, Button, Container, Image } from 'react-bootstrap';
+import { Form, Button, Container, Image, Row, Col } from 'react-bootstrap';
+import Notification from '../components/common/Notification';
 
 import { useNavigate } from "react-router-dom";
 import PostService from '../services/postService';
@@ -9,35 +10,79 @@ const AddPost = () => {
   const [headline, setHeadline] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [image, setImage] = useState(null);
-  const [preview, setPreview] = useState(null);
+  const [mediaFiles, setMediaFiles] = useState([]);
+  const [previews, setPreviews] = useState([]);
   const [tags, setTags] = useState([]);
   const [currentTag, setCurrentTag] = useState('');
+  const [notification, setNotification] = useState(null);
   const navigate = useNavigate();
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setImage(file);
-    if (file) {
-      setPreview(URL.createObjectURL(file));
-    } else {
-      setPreview(null);
+
+  const handleMediaChange = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length + mediaFiles.length > 3) {
+      setNotification({
+        message: 'You can only upload up to 3 files',
+        type: 'danger'
+      });
+      return;
     }
+
+    const newMediaFiles = [...mediaFiles];
+    const newPreviews = [...previews];
+
+    files.forEach(file => {
+      if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
+        newMediaFiles.push(file);
+        if (file.type.startsWith('image/')) {
+          newPreviews.push({
+            type: 'image',
+            url: URL.createObjectURL(file)
+          });
+        } else {
+          newPreviews.push({
+            type: 'video',
+            url: URL.createObjectURL(file)
+          });
+        }
+      }
+    });
+
+    setMediaFiles(newMediaFiles);
+    setPreviews(newPreviews);
+  };
+
+  const handleRemoveMedia = (index) => {
+    const newMediaFiles = [...mediaFiles];
+    const newPreviews = [...previews];
+    
+    newMediaFiles.splice(index, 1);
+    newPreviews.splice(index, 1);
+    
+    setMediaFiles(newMediaFiles);
+    setPreviews(newPreviews);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Prepare form data for backend submission
     const formData = new FormData();
     formData.append('userName', userName);
     formData.append('headline', headline);
     formData.append('title', title);
     formData.append('description', description);
     formData.append('tags', tags);
-    formData.append('imageFile', image);
+    
+    mediaFiles.forEach((file, index) => {
+      formData.append(`mediaFile${index}`, file);
+    });
 
     await PostService.addPost(formData);
-    navigate("/posts");
-    alert('Post submitted!');
+    setNotification({
+      message: 'Post submitted!',
+      type: 'success'
+    });
+    setTimeout(() => {
+      navigate("/posts");
+    }, 1500);
   };
 
   const handleAddTag = (e) => {
@@ -54,6 +99,13 @@ const AddPost = () => {
 
   return (
     <Container style={{ maxWidth: 600, marginTop: 40 }}>
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
+      )}
       <h2 className="mb-4">Add a New Post</h2>
       <Form onSubmit={handleSubmit}>
         <Form.Group controlId="formUserName" className="mb-3">
@@ -119,19 +171,43 @@ const AddPost = () => {
             ))}
           </div>
         </Form.Group>
-        <Form.Group controlId="formImage" className="mb-3">
-          <Form.Label className="fw-bold">Image</Form.Label>
+        <Form.Group controlId="formMedia" className="mb-3">
+          <Form.Label className="fw-bold">Media Files (Up to 3)</Form.Label>
           <Form.Control
             type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            required
+            accept="image/*,video/*"
+            onChange={handleMediaChange}
+            multiple
+            required={mediaFiles.length === 0}
           />
-          {preview && (
-            <div className="mt-3">
-              <Image src={preview} alt="Preview" fluid rounded />
-            </div>
-          )}
+          <div className="mt-3">
+            <Row>
+              {previews.map((preview, index) => (
+                <Col key={index} xs={12} md={4} className="mb-3">
+                  <div className="position-relative">
+                    {preview.type === 'image' ? (
+                      <Image src={preview.url} alt={`Preview ${index + 1}`} fluid rounded />
+                    ) : (
+                      <video
+                        src={preview.url}
+                        controls
+                        className="w-100 rounded"
+                        style={{ maxHeight: '200px' }}
+                      />
+                    )}
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      className="position-absolute top-0 end-0 m-2"
+                      onClick={() => handleRemoveMedia(index)}
+                    >
+                      ×
+                    </Button>
+                  </div>
+                </Col>
+              ))}
+            </Row>
+          </div>
         </Form.Group>
         <Button variant="success" type="submit">
           Add Post
