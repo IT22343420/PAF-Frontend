@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, Button, Row, Col, Badge, Carousel } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { PencilSquare, Trash, Heart, Chat } from 'react-bootstrap-icons';
-import PostService from '../services/postService';
+import PostService from '../../services/postService';
 
 const SinglePost = ({ post, profileImage, onDelete }) => {
     const { id, userName, headline, title, description, filePaths, tags, createdAt } = post;
@@ -41,7 +41,7 @@ const SinglePost = ({ post, profileImage, onDelete }) => {
                     <Col md={10}>
                         <Row>
                             {/* Left Component */}
-                            <Col md={4}>
+                            <Col md={4} className="position-relative">
                                 <div className="d-flex align-items-center mb-2">
                                     <img 
                                         src={profileImage} 
@@ -52,7 +52,6 @@ const SinglePost = ({ post, profileImage, onDelete }) => {
                                     <div>
                                         <div className="fw-bold">{userName}</div>
                                         <div className="text-muted small">{headline}</div>
-                                        <div className="text-muted small">{new Date(createdAt).toLocaleDateString()}</div>
                                     </div>
                                 </div>
                                 
@@ -88,7 +87,7 @@ const SinglePost = ({ post, profileImage, onDelete }) => {
                                     </Carousel>
                                 )}
 
-                                <div className="d-flex gap-2">
+                                <div className="position-absolute bottom-0 start-0 w-100 d-flex gap-2 p-2">
                                     <Button 
                                         variant="outline-danger" 
                                         size="sm" 
@@ -114,6 +113,9 @@ const SinglePost = ({ post, profileImage, onDelete }) => {
                             <Col md={8}>
                                 <h3 className="mb-3">{title}</h3>
                                 <p className="text-muted mb-4">{description}</p>
+                                <p className="text-muted fst-italic fw-bold mb-4 text-end">
+                                    Posted on {new Date(createdAt).toLocaleDateString()}
+                                </p>
                                 <div className="d-flex justify-content-between align-items-end">
                                     <div className="d-flex flex-wrap gap-2">
                                         {tags && tags.map((tag, index) => (

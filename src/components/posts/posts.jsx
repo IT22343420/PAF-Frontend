@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import SinglePost from "./singlePost";
-import PostService from "../services/postService";
+import PostService from "../../services/postService";
+import StartPost from "./startPost";
 
 
 const Posts = () => {
@@ -29,6 +30,7 @@ const Posts = () => {
     }
     return (
         <Container>
+            <StartPost />
             <Row className="justify-content-center">
                 {posts.map((post, idx) => (
                     <Col md={10} className="mb-4" key={idx}>

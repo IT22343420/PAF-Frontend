@@ -6,7 +6,7 @@ import Profile from "./profile/Profile";
 import AddPost from "../pages/addPost";
 import PostsPage from "../pages/postsPage";
 import EditPost from "../pages/editPost";
-
+import StartPost from "./posts/startPost";
 function NavigationCom() {
   return (
     <React.Fragment>
@@ -16,6 +16,7 @@ function NavigationCom() {
         <Route path="/posts" element={<PostsPage />} />
         <Route path="/addPost" element={<AddPost />} />
         <Route path="/editPost/:id" element={<EditPost />} />
+        <Route path="/startPost" element={<StartPost />} />
       </Routes>
     </React.Fragment>
   );
