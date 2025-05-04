@@ -39,7 +39,7 @@ const EditPost = () => {
 
     const handleMediaChange = (e) => {
         const files = Array.from(e.target.files);
-        if (files.length + mediaFiles.length > 3) {
+        if (files.length + existingFilePaths.length + mediaFiles.length > 3) {
             alert('You can only upload up to 3 files');
             return;
         }
@@ -68,7 +68,18 @@ const EditPost = () => {
         setPreviews(newPreviews);
     };
 
-    const handleRemoveMedia = (index) => {
+    const handleRemoveExistingMedia = async (index) => {
+        try {
+            const newFilePaths = [...existingFilePaths];
+            newFilePaths.splice(index, 1);
+            setExistingFilePaths(newFilePaths);
+        } catch (error) {
+            console.error('Error removing media:', error);
+            alert('Failed to remove media. Please try again.');
+        }
+    };
+
+    const handleRemoveNewMedia = (index) => {
         const newMediaFiles = [...mediaFiles];
         const newPreviews = [...previews];
         
@@ -98,12 +109,27 @@ const EditPost = () => {
         formData.append('title', title);
         formData.append('description', description);
         formData.append('tags', tags);
-        
-        mediaFiles.forEach((file, index) => {
+
+        // Append new media files
+        let index = 0;
+        mediaFiles.forEach((file) => {
             formData.append(`mediaFile${index}`, file);
+            index++;
         });
 
         try {
+            // Append existing media files
+            const existingFilesPromises = existingFilePaths.map(async (filePath, indexNo) => {
+                const response = await fetch(filePath);
+                const blob = await response.blob();
+                const file = new File([blob], existingFilePaths[indexNo], { type: blob.type });
+                formData.append(`mediaFile${index}`, file);
+                index++;
+            });
+
+            // Wait for all existing files to be processed
+            await Promise.all(existingFilesPromises);
+
             await PostService.updatePost(id, formData);
             navigate("/posts");
             alert('Post updated successfully!');
@@ -187,12 +213,6 @@ const EditPost = () => {
 
                 <Form.Group controlId="formMedia" className="mb-3">
                     <Form.Label className="fw-bold">Media Files (Up to 3)</Form.Label>
-                    <Form.Control
-                        type="file"
-                        accept="image/*,video/*"
-                        onChange={handleMediaChange}
-                        multiple
-                    />
                     <div className="mt-3">
                         <Row>
                             {existingFilePaths.map((filePath, index) => (
@@ -210,6 +230,14 @@ const EditPost = () => {
                                         ) : (
                                             <Image src={filePath} alt={`Existing ${index + 1}`} fluid rounded />
                                         )}
+                                        <Button
+                                            variant="danger"
+                                            size="sm"
+                                            className="position-absolute top-0 end-0 m-2"
+                                            onClick={() => handleRemoveExistingMedia(index)}
+                                        >
+                                            X
+                                        </Button>
                                     </div>
                                 </Col>
                             ))}
@@ -230,14 +258,23 @@ const EditPost = () => {
                                             variant="danger"
                                             size="sm"
                                             className="position-absolute top-0 end-0 m-2"
-                                            onClick={() => handleRemoveMedia(index)}
+                                            onClick={() => handleRemoveNewMedia(index)}
                                         >
-                                            ×
+                                            X
                                         </Button>
                                     </div>
                                 </Col>
                             ))}
                         </Row>
+                        {existingFilePaths.length + mediaFiles.length < 3 && (
+                            <Form.Control
+                                type="file"
+                                accept="image/*,video/*"
+                                onChange={handleMediaChange}
+                                multiple
+                                className="mt-2"
+                            />
+                        )}
                     </div>
                 </Form.Group>
 
