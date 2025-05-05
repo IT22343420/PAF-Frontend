@@ -32,7 +32,7 @@ function WallComponent() {
         </NavLink>
       </div>
       <div className="flex flex-row mt-3">
-        <div className="flex flex-col bg-gray-200 p-5 rounded-md w-[350px] h-[500px] mr-6">let's display profile details here</div>
+    
         <WallNavigation />
       </div>
     </div>

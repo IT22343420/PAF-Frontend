@@ -1,14 +1,14 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 
-import Post from "./Post";
+import PostsPage from "../../pages/postsPage";
 import Progress from "./Progress";
 
 function WallNavigation() {
   return (
     <React.Fragment>
       <Routes>
-        <Route path="/" element={<Post />} />
+        <Route path="/" element={<PostsPage />} />
         <Route path="/progress" element={<Progress />} />
       </Routes>
     </React.Fragment>
