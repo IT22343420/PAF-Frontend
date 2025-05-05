@@ -81,7 +81,7 @@ const AddPost = () => {
       type: 'success'
     });
     setTimeout(() => {
-      navigate("/posts");
+      navigate("/");
     }, 1500);
   };
 
