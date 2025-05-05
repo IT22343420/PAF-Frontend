@@ -145,7 +145,7 @@ const EditPost = () => {
                 type: 'success'
             });
             setTimeout(() => {
-                navigate("/posts");
+                navigate("/");
             }, 1500);
         } catch (error) {
             console.error('Error updating post:', error);

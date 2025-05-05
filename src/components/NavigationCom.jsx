@@ -13,7 +13,7 @@ function NavigationCom() {
       <Routes>
         <Route path="/*" element={<WallComponent />} />
         <Route path="/profile/*" element={<Profile />} />
-        <Route path="/posts" element={<PostsPage />} />
+        <Route path="/" element={<PostsPage />} />
         <Route path="/addPost" element={<AddPost />} />
         <Route path="/editPost/:id" element={<EditPost />} />
         <Route path="/startPost" element={<StartPost />} />
