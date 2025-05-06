@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 import { ToastContainer } from "react-toastify";
 import { getUserProgress } from "../../services/progressService";
 import { createProgress } from "../../services/progressService";
 import { updateProgress } from "../../services/progressService";
+import { deleteProgress } from "../../services/progressService";
+
+import { FaEdit } from "react-icons/fa";
+import { RiDeleteBin6Fill } from "react-icons/ri";
 
 function LearningProgress() {
   const [progressList, setProgressList] = useState([]);
@@ -84,9 +89,42 @@ function LearningProgress() {
     }
   };
 
+  const handleDeleteProgress = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "This progress update will be permanently deleted.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await deleteProgress(id);
+        setProgressList((prevList) =>
+          prevList.filter((item) => item.id !== id)
+        );
+
+        Swal.fire({
+          title: "Deleted!",
+          text: "The progress update has been deleted.",
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      } catch (error) {
+        console.error("Error deleting progress:", error);
+        Swal.fire("Error!", "Something went wrong.", "error");
+      }
+    }
+  };
+
   return (
-    <div className="mt-10">
-      <div className="mt-5 flex flex-row">
+    <div className="mt-10 border-2 border-gray-300 p-5 rounded-xl bg-white">
+      <div className="flex flex-row">
         <button
           className="flex p-2 bg-indigo-600 text-white font-bold hover:bg-indigo-500 rounded-md"
           onClick={handleOpenModal}
@@ -103,12 +141,12 @@ function LearningProgress() {
           {progressList.map((progress) => (
             <div
               key={progress.id}
-              className={`rounded-md p-5 shadow-md transition-all duration-300 ${
+              className={`rounded-md p-5 shadow-md transition-all duration-300 bg-white ${
                 progress.templateType === "Start Learning"
-                  ? "bg-blue-100 border-l-4 border-blue-500"
+                  ? "hover:bg-blue-100 border-l-4 border-blue-500"
                   : progress.templateType === "Progressing"
-                  ? "bg-yellow-100 border-l-4 border-yellow-500"
-                  : "bg-green-100 border-l-4 border-green-500"
+                  ? "hover:bg-yellow-100 border-l-4 border-yellow-500"
+                  : "hover:bg-green-100 border-l-4 border-green-500"
               }`}
             >
               <h3 className="text-xl font-bold mb-2">{progress.title}</h3>
@@ -121,9 +159,15 @@ function LearningProgress() {
               </p>
               <button
                 onClick={() => handleOpenUpdateModal(progress)}
-                className="text-sm text-indigo-600 hover:underline"
+                className=" text-indigo-600 px-2 py-2 bg-white font-bold rounded-md hover:bg-blue-400 hover:text-white mt-5 border-2 border-blue-400"
               >
-                Edit
+                <FaEdit className="text-md" />
+              </button>
+              <button
+                onClick={() => handleDeleteProgress(progress.id)}
+                className="ml-4 text-sm text-red-600 px-2 py-2 bg-white font-bold rounded-md hover:bg-red-400 hover:text-white border-2 border-red-400"
+              >
+                <RiDeleteBin6Fill className="text-md" />
               </button>
             </div>
           ))}
