@@ -143,10 +143,10 @@ function LearningProgress() {
               key={progress.id}
               className={`rounded-md p-3 shadow-md transition-all duration-300 bg-white ${
                 progress.templateType === "Start Learning"
-                  ? "hover:bg-blue-100 border-l-4 border-blue-500"
+                  ? "hover:!bg-blue-100 border-l-4 border-blue-500"
                   : progress.templateType === "Progressing"
-                  ? "hover:bg-yellow-100 border-l-4 border-yellow-500"
-                  : "hover:bg-green-100 border-l-4 border-green-500"
+                  ? "hover:!bg-yellow-100 border-l-4 border-yellow-500"
+                  : "hover:!bg-green-100 border-l-4 border-green-500"
               }`}
             >
               <p className="text-xl font-bold mb-2">{progress.title}</p>
@@ -157,18 +157,20 @@ function LearningProgress() {
               <p className="text-sm text-gray-400">
                 Created at: {progress.createdAt?.substring(0, 10)}
               </p>
-              <button
-                onClick={() => handleOpenUpdateModal(progress)}
-                className=" text-indigo-600 px-2 py-2 bg-white font-bold rounded-md hover:bg-blue-400 hover:text-white mt-3 border-2 border-blue-400"
-              >
-                <FaEdit className="text-md" />
-              </button>
-              <button
-                onClick={() => handleDeleteProgress(progress.id)}
-                className="ml-4 text-sm text-red-600 px-2 py-2 bg-white font-bold rounded-md hover:bg-red-400 hover:text-white border-2 border-red-400"
-              >
-                <RiDeleteBin6Fill className="text-md" />
-              </button>
+              <div className="flex flex-row">
+                <div
+                  onClick={() => handleOpenUpdateModal(progress)}
+                  className="flex justify-center items-center text-indigo-600 w-[35px] h-[35px] bg-white font-bold rounded-md hover:!bg-blue-400 hover:text-white border-2 border-blue-400"
+                >
+                  <FaEdit className="text-md" />
+                </div>
+                <div
+                  onClick={() => handleDeleteProgress(progress.id)}
+                  className="flex justify-center items-center ml-4 text-sm text-red-600 w-[35px] h-[35px] bg-white font-bold rounded-md hover:!bg-red-400 hover:text-white border-2 border-red-400"
+                >
+                  <RiDeleteBin6Fill className="text-md" />
+                </div>
+              </div>
             </div>
           ))}
         </div>
@@ -177,9 +179,7 @@ function LearningProgress() {
       {isPopupOpen && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
           <div className="flex flex-col bg-white p-10 rounded-md w-150">
-            <p className="text-2xl font-bold mb-4">
-              Create Learning Progress
-            </p>
+            <p className="text-2xl font-bold mb-4">Create Learning Progress</p>
             <form onSubmit={handleSubmit} className="flex flex-col">
               <input
                 type="text"
@@ -318,9 +318,7 @@ function LearningProgress() {
       {isUpdatePopupOpen && selectedProgress && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
           <div className="flex flex-col bg-white p-10 rounded-md w-150">
-            <p className="text-2xl font-bold mb-4">
-              Update Learning Progress
-            </p>
+            <p className="text-2xl font-bold mb-4">Update Learning Progress</p>
             <form onSubmit={handleUpdateSubmit} className="flex flex-col">
               <input
                 type="text"
