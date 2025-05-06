@@ -310,20 +310,20 @@ const SinglePost = ({ post, profileImage, onDelete, onSetNotification }) => {
                 <IoMdClose className="text-2xl font-bold" />
               </button>
             </div>
-            <h3 className="text-lg font-bold mb-4">Comments</h3>
+            <p className="text-xl font-bold mb-3">Comments</p>
             <div className="max-h-60 overflow-y-auto mb-4">
               {comments.length === 0 ? (
                 <p className="text-gray-500">No comments yet.</p>
               ) : (
                 [...comments].reverse().map((cmt, idx) => (
-                  <div key={idx} className="flex flex-row mb-5">
+                  <div key={idx} className="flex flex-row mb-3">
                     <div className="flex flex-col">
                       <img src={profile} className="w-13 h-13 rounded-[50%]" />
                     </div>
                     <div className="flex flex-col ml-5">
-                      <div className="flex flex-col bg-gray-200 p-3 rounded-md">
-                        <p className="text-sm font-medium">{cmt.userName}</p>
-                        <p className="text-md text-gray-900">{cmt.content}</p>
+                      <div className="flex flex-col bg-gray-200 p-2 rounded-md">
+                        <p className="text-sm font-medium m-0">{cmt.userName}</p>
+                        <p className="text-md text-gray-900 m-0">{cmt.content}</p>
                       </div>
                       <p className="text-xs text-gray-400">
                         {cmt.createdAt?.substring(0, 19).replace("T", " ")}
