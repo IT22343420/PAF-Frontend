@@ -3,10 +3,11 @@ import { Container, Row, Col, Card } from 'react-bootstrap';
 import SinglePost from "./singlePost";
 import PostService from "../../services/postService";
 import StartPost from "./startPost";
-
+import Loading from "../common/Loading";
 
 const Posts = ({onSetNotification}) => {
     const [posts, setPosts] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const getPosts = async () => {
@@ -20,6 +21,8 @@ const Posts = ({onSetNotification}) => {
             }
           } catch (error) {
             console.log(error);
+          } finally {
+            setLoading(false);
           }
         };
         getPosts();
@@ -32,6 +35,11 @@ const Posts = ({onSetNotification}) => {
             type: 'success'
         });
     }
+
+    if (loading) {
+        return <Loading />;
+    }
+
     return (
         <Container>
             <StartPost />
