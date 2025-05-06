@@ -5,10 +5,19 @@ import { IoMdClose } from "react-icons/io";
 import { BiSolidLike } from "react-icons/bi";
 import { RiMessage3Fill } from "react-icons/ri";
 
+import EmojiPicker from "emoji-picker-react";
+import { FaRegSmile } from "react-icons/fa";
+import { TiWarningOutline } from "react-icons/ti";
+import { IoIosSend } from "react-icons/io";
+
 import profile from "../../images/profile.jpg";
+import start from "../../images/start.gif";
+import progressgif from "../../images/progress.gif";
+import completed from "../../images/completed.gif";
 
 function Progress() {
   const [progressList, setProgressList] = useState([]);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
@@ -98,6 +107,10 @@ function Progress() {
     }
   };
 
+  const handleEmojiClick = (emojiData) => {
+    setCommentInput((prev) => prev + emojiData.emoji);
+  };
+
   return (
     <div className="flex flex-col px-4">
       {progressList.length === 0 ? (
@@ -109,17 +122,71 @@ function Progress() {
             .map((progress) => (
               <div
                 key={progress.id}
-                className="flex flex-col transition-all duration-300 hover:scale-102 mb-7"
+                className="flex flex-col bg-white border-2 border-gray-300 rounded-xl mb-7 w-150 h-auto"
               >
-                <div className="flex flex-row items-center">
+                <div className="flex flex-row items-center p-5">
                   <div className="rounded-[50%] border-3 border-indigo-600">
-                    <img src={profile} className="w-10 h-10 rounded-[50%]" />
+                    <img src={profile} className="w-12 h-12 rounded-[50%]" />
                   </div>
-                  <p className="ml-3 font-bold">{progress.userId}</p>
+                  <div className="flex flex-col ml-3">
+                    <p className="font-bold text-md">{progress.userId}</p>
+                    <p className="text-[12px] text-gray-600">
+                      Software Engineer | SLIIT
+                    </p>
+                    <span className="text-[11px] text-gray-600">
+                      {progress.createdAt?.substring(0, 10)}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex flex-col w-150 h-auto p-5 rounded-md shadow-lg mt-2 bg-white">
+
+                <div className="px-5">
+                  {progress.templateType === "Start Learning" && (
+                    <>
+                      <p className="text-md text-gray-600">
+                        I've just started my learning journey on this topic.
+                        Excited to dive in and explore what's ahead! I Started
+                        to learn{" "}
+                        <span className="font-bold">{progress.title}</span>
+                      </p>
+                    </>
+                  )}
+                  {progress.templateType === "Progressing" && (
+                    <>
+                      <p className="text-md text-gray-600">
+                        Making steady progress and gaining more insight every
+                        day. Each step is a win! I am learning{" "}
+                        <span className="font-bold">{progress.title}</span>
+                      </p>
+                    </>
+                  )}
+                  {progress.templateType === "Completed" && (
+                    <>
+                      <p className="text-md text-gray-600">
+                        "Thrilled to complete this learning milestone! Proud of
+                        the journey and the knowledge gained." I have completed{" "}
+                        <span className="font-bold">{progress.title}</span>
+                      </p>
+                    </>
+                  )}
+                  {!["Start Learning", "Progressing", "Completed"].includes(
+                    progress.templateType
+                  ) && (
+                    <>
+                      <p className="text-md text-gray-600">
+                        Learning update posted keep going strong! i have
+                        completed{" "}
+                        <span className="font-bold">{progress.title}</span>
+                      </p>
+                    </>
+                  )}
+                  <div className="">
+                    <p className="text-gray-700 my-2">{progress.content}</p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col mt-2">
                   <div
-                    className={`flex flex-col justify-center items-center w-[100%] h-40 rounded-md  ${
+                    className={`flex flex-col justify-center items-center w-[100%] h-60  ${
                       progress.templateType === "Start Learning"
                         ? "bg-blue-200 "
                         : progress.templateType === "Progressing"
@@ -129,31 +196,17 @@ function Progress() {
                   >
                     {progress.templateType === "Start Learning" && (
                       <>
-                        <p className="text-md font-bold">
-                          I've just started my learning journey on this topic.
-                        </p>
-                        <p className="text-md font-bold">
-                          Excited to dive in and explore what's ahead!
-                        </p>
+                        <img src={start} className="w-60 h-auto" />
                       </>
                     )}
                     {progress.templateType === "Progressing" && (
                       <>
-                        <p className="text-md font-bold">
-                          Making steady progress and gaining more insight every
-                          day.
-                        </p>
-                        <p className="text-md font-bold">Each step is a win!</p>
+                        <img src={progressgif} className="w-60 h-auto" />
                       </>
                     )}
                     {progress.templateType === "Completed" && (
                       <>
-                        <p className="text-md font-bold">
-                          "Thrilled to complete this learning milestone!
-                        </p>
-                        <p className="text-md font-bold">
-                          Proud of the journey and the knowledge gained."
-                        </p>
+                        <img src={completed} className="w-60 h-auto" />
                       </>
                     )}
                     {!["Start Learning", "Progressing", "Completed"].includes(
@@ -167,37 +220,50 @@ function Progress() {
                       </>
                     )}
                   </div>
-                  <h2 className="text-xl font-bold mt-2">{progress.title}</h2>
-                  <p className="text-gray-700 my-2">{progress.content}</p>
-                  <div className="flex justify-between items-center mt-3">
-                    <span className="text-sm text-gray-600">
-                      {progress.templateType}
+
+                  <div className="flex justify-between items-center py-3 px-5">
+                    <span className="flex flex-row text-md text-gray-600">
+                      <BiSolidLike className="text-xl mr-2" />
+                      like{""} {progress.likeCount || 0}
                     </span>
-                    <span className="text-sm text-gray-400">
-                      {progress.createdAt?.substring(0, 10)}
+                    <span className="text-md text-gray-600">
+                      {progress.comments?.length || 0} {""}comments
                     </span>
                   </div>
-                  <div className="flex flex-row mt-2">
+                  <div className="flex flex-row justify-between px-5 py-2 border-t-2 border-gray-200">
                     <button
                       onClick={() => handleLike(progress.id)}
-                      className={`flex flex-row text-sm mr-4 ${
+                      className={`flex flex-row text-sm px-5 py-2 hover:bg-gray-200 ${
                         progress.likedBy?.includes(currentUserId)
                           ? "text-blue-500"
-                          : "text-gray-500"
+                          : "text-gray-600"
                       }`}
                     >
                       <BiSolidLike className="text-xl mr-2" />
                       {progress.likedBy?.includes(currentUserId)
                         ? "Unlike"
-                        : "Like"}{" "}
-                      ({progress.likeCount || 0})
+                        : "Like"}
                     </button>
                     <button
-                      className=" flex flex-row text-sm text-gray-600"
+                      className=" flex flex-row text-sm text-gray-600 px-5 py-2 hover:bg-gray-200"
                       onClick={() => openCommentModal(progress)}
                     >
                       <RiMessage3Fill className="mr-2 text-xl" />
-                      comment ({progress.comments?.length || 0})
+                      Comment
+                    </button>
+                    <button
+                      className=" flex flex-row text-sm text-gray-600 px-5 py-2 hover:bg-gray-200"
+                      onClick={() => openCommentModal(progress)}
+                    >
+                      <TiWarningOutline className="mr-2 text-xl" />
+                      Report
+                    </button>
+                    <button
+                      className=" flex flex-row text-sm text-gray-600 px-5 py-2 hover:bg-gray-200"
+                      onClick={() => openCommentModal(progress)}
+                    >
+                      <IoIosSend className="mr-2 text-xl" />
+                      Share
                     </button>
                   </div>
                 </div>
@@ -251,12 +317,23 @@ function Progress() {
                 onChange={(e) => setCommentInput(e.target.value)}
               />
               <button
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                className="text-xl text-gray-600 hover:text-blue-500"
+              >
+                <FaRegSmile />
+              </button>
+              <button
                 onClick={handleAddComment}
                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
               >
                 Send
               </button>
             </div>
+            {showEmojiPicker && (
+              <div className="absolute bottom-14 right-5 z-50">
+                <EmojiPicker onEmojiClick={handleEmojiClick} />
+              </div>
+            )}
           </div>
         </div>
       )}
