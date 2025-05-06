@@ -1,53 +1,58 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { FaPlus, FaTrash, FaArrowLeft } from 'react-icons/fa';
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { api } from '../services/api';
+import { FaArrowLeft, FaPlus, FaTrash } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
+// Helper to display date as YYYY-MM-DD
+const displayDate = (dateStr) => dateStr ? dateStr.slice(0, 10) : '';
+
+// Helper to convert date to ISO string
+const toISODate = (dateStr) => {
+  if (dateStr && dateStr.includes('T')) return dateStr;
+  return dateStr ? new Date(dateStr).toISOString() : null;
+};
+
 const EditPlan = () => {
-  const navigate = useNavigate();
   const { id } = useParams();
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    deadline: '',
-    isPublic: true,
-    topics: [],
-  });
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Here you would typically fetch the plan data from an API
-    // For now, we'll use sample data
-    const sampleData = {
-      title: 'Sample Plan',
-      description: 'This is a sample learning plan description.',
-      deadline: '2024-12-31',
-      isPublic: true,
-      topics: [
-        {
-          id: 1,
-          name: 'Topic 1',
-          resourceLink: 'https://example.com',
-          targetDate: '2024-06-01',
-          status: 'Completed',
-        },
-        {
-          id: 2,
-          name: 'Topic 2',
-          resourceLink: 'https://example.com',
-          targetDate: '2024-07-01',
-          status: 'Pending',
-        },
-      ],
+    const fetchPlan = async () => {
+      try {
+        const data = await api.getPlan(id);
+        setFormData({
+          ...data,
+          completedate: displayDate(data.completedate),
+          targetdate: displayDate(data.targetdate),
+          createddate: displayDate(data.createddate),
+          updateddate: displayDate(data.updateddate),
+          topics: data.topics || [{
+            id: Date.now(),
+            name: '',
+            resourceLink: '',
+            targetDate: '',
+            status: 'Pending'
+          }]
+        });
+      } catch (err) {
+        setError('Failed to fetch plan.');
+      } finally {
+        setLoading(false);
+      }
     };
-    setFormData(sampleData);
+    fetchPlan();
   }, [id]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
+    setFormData(prev => ({
+      ...prev,
       [name]: type === 'checkbox' ? checked : value,
-    });
+    }));
   };
 
   const handleTopicChange = (index, field, value) => {
@@ -72,7 +77,7 @@ const EditPlan = () => {
           name: '',
           resourceLink: '',
           targetDate: '',
-          status: 'Pending',
+          status: 'Pending'
         },
       ],
     });
@@ -86,18 +91,32 @@ const EditPlan = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    navigate('/');
-  };
-
-  const handleDelete = () => {
-    if (window.confirm('Are you sure you want to delete this plan?')) {
-      console.log('Plan deleted');
+    setLoading(true);
+    setError(null);
+    const now = new Date();
+    const updatedPlan = {
+      ...formData,
+      completedate: toISODate(formData.completedate),
+      targetdate: toISODate(formData.targetdate),
+      createddate: toISODate(formData.createddate),
+      updateddate: now.toISOString(),
+    };
+    try {
+      await api.updatePlan(updatedPlan);
       navigate('/');
+    } catch (err) {
+      setError('Failed to update plan. Please try again later.');
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div style={{ color: '#dc2626' }}>{error}</div>;
+  if (!formData) return <div>Plan not found</div>;
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
@@ -121,98 +140,42 @@ const EditPlan = () => {
             Edit Learning Plan
           </h1>
         </div>
-
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleUpdate}>
           <div style={{ marginBottom: '15px' }}>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: '5px', 
-              fontWeight: '500',
-              color: '#374151'
-            }}>
-              Title
-            </label>
+            <label style={{ display: 'block', marginBottom: '5px', fontWeight: '500', color: '#374151' }}>Title</label>
             <input
               type="text"
-              name="title"
-              value={formData.title}
+              name="planName"
+              value={formData.planName}
               onChange={handleInputChange}
               required
-              style={{
-                width: '100%',
-                padding: '8px',
-                border: '1px solid #d1d5db',
-                borderRadius: '4px'
-              }}
+              style={{ width: '100%', padding: '8px', border: '1px solid #d1d5db', borderRadius: '4px' }}
             />
           </div>
-
           <div style={{ marginBottom: '15px' }}>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: '5px', 
-              fontWeight: '500',
-              color: '#374151'
-            }}>
-              Description
-            </label>
+            <label style={{ display: 'block', marginBottom: '5px', fontWeight: '500', color: '#374151' }}>Description</label>
             <textarea
-              name="description"
-              value={formData.description}
+              name="plandesc"
+              value={formData.plandesc}
               onChange={handleInputChange}
               required
               rows="4"
-              style={{
-                width: '100%',
-                padding: '8px',
-                border: '1px solid #d1d5db',
-                borderRadius: '4px'
-              }}
+              style={{ width: '100%', padding: '8px', border: '1px solid #d1d5db', borderRadius: '4px' }}
             />
           </div>
-
           <div style={{ marginBottom: '15px' }}>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: '5px', 
-              fontWeight: '500',
-              color: '#374151'
-            }}>
-              Deadline
-            </label>
+            <label style={{ display: 'block', marginBottom: '5px', fontWeight: '500', color: '#374151' }}>Complete Date</label>
             <input
               type="date"
-              name="deadline"
-              value={formData.deadline}
+              name="completedate"
+              value={formData.completedate}
               onChange={handleInputChange}
               required
-              style={{
-                width: '100%',
-                padding: '8px',
-                border: '1px solid #d1d5db',
-                borderRadius: '4px'
-              }}
+              style={{ width: '100%', padding: '8px', border: '1px solid #d1d5db', borderRadius: '4px' }}
             />
           </div>
 
-          <div style={{ marginBottom: '15px' }}>
-            <label style={{ 
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              color: '#374151'
-            }}>
-              <input
-                type="checkbox"
-                name="isPublic"
-                checked={formData.isPublic}
-                onChange={handleInputChange}
-                style={{ margin: 0 }}
-              />
-              Public Plan
-            </label>
-          </div>
-
+          {/* Topics Section */}
           <div style={{ marginBottom: '20px' }}>
             <h2 style={{ 
               color: '#1f2937',
@@ -222,43 +185,38 @@ const EditPlan = () => {
               Topics
             </h2>
             {formData.topics.map((topic, index) => (
-              <div 
-                key={topic.id}
-                style={{ 
-                  marginBottom: '15px',
-                  padding: '15px',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '4px'
-                }}
-              >
-                <div style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between',
-                  marginBottom: '10px'
-                }}>
-                  <h3 style={{ color: '#1f2937' }}>Topic {index + 1}</h3>
+              <div key={topic.id} style={{ 
+                border: '1px solid #e5e7eb',
+                borderRadius: '8px',
+                padding: '15px',
+                marginBottom: '15px',
+                position: 'relative'
+              }}>
+                {formData.topics.length > 1 && (
                   <button
                     type="button"
                     onClick={() => removeTopic(index)}
                     style={{
-                      color: '#dc2626',
+                      position: 'absolute',
+                      top: '10px',
+                      right: '10px',
                       background: 'none',
                       border: 'none',
+                      color: '#dc2626',
                       cursor: 'pointer',
-                      padding: '4px 8px'
+                      padding: '5px'
                     }}
                   >
                     <FaTrash />
                   </button>
-                </div>
-
+                )}
                 <div style={{ marginBottom: '10px' }}>
                   <label style={{ 
                     display: 'block', 
                     marginBottom: '5px', 
                     color: '#374151'
                   }}>
-                    Name
+                    Topic Name
                   </label>
                   <input
                     type="text"
@@ -273,7 +231,6 @@ const EditPlan = () => {
                     }}
                   />
                 </div>
-
                 <div style={{ marginBottom: '10px' }}>
                   <label style={{ 
                     display: 'block', 
@@ -294,7 +251,6 @@ const EditPlan = () => {
                     }}
                   />
                 </div>
-
                 <div style={{ marginBottom: '10px' }}>
                   <label style={{ 
                     display: 'block', 
@@ -316,7 +272,6 @@ const EditPlan = () => {
                     }}
                   />
                 </div>
-
                 <div>
                   <label style={{ 
                     display: 'block', 
@@ -363,53 +318,20 @@ const EditPlan = () => {
             </button>
           </div>
 
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'flex-end', 
-            gap: '10px', 
-            marginTop: '20px' 
-          }}>
-            <button
-              type="button"
-              onClick={handleDelete}
-              style={{
-                padding: '8px 16px',
-                backgroundColor: '#dc2626',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontWeight: '500'
-              }}
-            >
-              Delete Plan
-            </button>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
             <button
               type="button"
               onClick={() => navigate('/')}
-              style={{
-                padding: '8px 16px',
-                border: '1px solid #d1d5db',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                backgroundColor: 'white'
-              }}
+              style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '4px', cursor: 'pointer', backgroundColor: 'white' }}
             >
               Cancel
             </button>
-            <button 
+            <button
               type="submit"
-              style={{
-                padding: '8px 16px',
-                backgroundColor: '#2563eb',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontWeight: '500'
-              }}
+              disabled={loading}
+              style={{ padding: '8px 16px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: '500', opacity: loading ? 0.7 : 1 }}
             >
-              Update Plan
+              {loading ? 'Updating...' : 'Update Plan'}
             </button>
           </div>
         </form>
