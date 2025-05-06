@@ -9,7 +9,7 @@ function WallComponent() {
         <NavLink
           to="/"
           className={({ isActive }) =>
-            `flex justify-center items-center p-2 border-2 border-indigo-600 font-bold rounded-md mr-2 ${
+            `flex justify-center !no-underline items-center p-2 border-2 border-indigo-600 font-bold rounded-md mr-2 ${
               isActive
                 ? "text-white bg-indigo-600 hover:bg-indigo-500 hover:text-white "
                 : "text-gray-600 hover:text-indigo-600 "
@@ -21,7 +21,7 @@ function WallComponent() {
         <NavLink
           to="/progress"
           className={({ isActive }) =>
-            `flex justify-center items-center p-2 border-2 border-indigo-600 font-bold rounded-md ${
+            `flex justify-center items-center p-2 !no-underline border-2 border-indigo-600 font-bold rounded-md ${
               isActive
                 ? "text-white bg-indigo-600 hover:bg-indigo-500 hover:text-white "
                 : "text-gray-600 hover:text-indigo-600 "
