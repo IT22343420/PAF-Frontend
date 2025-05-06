@@ -116,7 +116,7 @@ function Progress() {
       {progressList.length === 0 ? (
         <p className="text-center text-gray-500">No learning progress yet.</p>
       ) : (
-        <div className="flex flex-col">
+        <div className="flex flex-col w-150 h-auto">
           {[...progressList]
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
             .map((progress) => (
@@ -124,22 +124,22 @@ function Progress() {
                 key={progress.id}
                 className="flex flex-col bg-white border-2 border-gray-300 rounded-xl mb-7 w-150 h-auto"
               >
-                <div className="flex flex-row items-center p-5">
+                <div className="flex flex-row items-center m-0 p-3">
                   <div className="rounded-[50%] border-3 border-indigo-600">
                     <img src={profile} className="w-12 h-12 rounded-[50%]" />
                   </div>
                   <div className="flex flex-col ml-3">
-                    <p className="font-bold text-md">{progress.userId}</p>
-                    <p className="text-[12px] text-gray-600">
+                    <p className="font-bold text-md m-0">{progress.userId}</p>
+                    <p className="text-[12px] text-gray-600 m-0">
                       Software Engineer | SLIIT
                     </p>
-                    <span className="text-[11px] text-gray-600">
+                    <span className="text-[11px] text-gray-600 m-0">
                       {progress.createdAt?.substring(0, 10)}
                     </span>
                   </div>
                 </div>
 
-                <div className="px-5">
+                <div className="px-3 m-0">
                   {progress.templateType === "Start Learning" && (
                     <>
                       <p className="text-md text-gray-600">
@@ -221,7 +221,7 @@ function Progress() {
                     )}
                   </div>
 
-                  <div className="flex justify-between items-center py-3 px-5">
+                  <div className="flex justify-between items-center py-3 px-3">
                     <span className="flex flex-row text-md text-gray-600">
                       <BiSolidLike className="text-xl mr-2" />
                       like{""} {progress.likeCount || 0}
@@ -230,10 +230,10 @@ function Progress() {
                       {progress.comments?.length || 0} {""}comments
                     </span>
                   </div>
-                  <div className="flex flex-row justify-between px-5 py-2 border-t-2 border-gray-200">
+                  <div className="flex flex-row justify-between py-2 px-3 border-t-2 border-gray-200">
                     <button
                       onClick={() => handleLike(progress.id)}
-                      className={`flex flex-row text-sm px-5 py-2 hover:bg-gray-200 ${
+                      className={`flex flex-row text-sm px-3 py-2 hover:bg-gray-200 ${
                         progress.likedBy?.includes(currentUserId)
                           ? "text-blue-500"
                           : "text-gray-600"
@@ -245,21 +245,21 @@ function Progress() {
                         : "Like"}
                     </button>
                     <button
-                      className=" flex flex-row text-sm text-gray-600 px-5 py-2 hover:bg-gray-200"
+                      className=" flex flex-row text-sm text-gray-600 px-3 py-2 hover:bg-gray-200"
                       onClick={() => openCommentModal(progress)}
                     >
                       <RiMessage3Fill className="mr-2 text-xl" />
                       Comment
                     </button>
                     <button
-                      className=" flex flex-row text-sm text-gray-600 px-5 py-2 hover:bg-gray-200"
+                      className=" flex flex-row text-sm text-gray-600 px-3 py-2 hover:bg-gray-200"
                       onClick={() => openCommentModal(progress)}
                     >
                       <TiWarningOutline className="mr-2 text-xl" />
                       Report
                     </button>
                     <button
-                      className=" flex flex-row text-sm text-gray-600 px-5 py-2 hover:bg-gray-200"
+                      className=" flex flex-row text-sm text-gray-600 px-3 py-2 hover:bg-gray-200"
                       onClick={() => openCommentModal(progress)}
                     >
                       <IoIosSend className="mr-2 text-xl" />
@@ -283,20 +283,20 @@ function Progress() {
                 <IoMdClose className="text-2xl font-bold" />
               </button>
             </div>
-            <h3 className="text-lg font-bold mb-4">Comments</h3>
+            <p className="text-xl font-bold mb-3">Comments</p>
             <div className="max-h-60 overflow-y-auto mb-4">
               {comments.length === 0 ? (
                 <p className="text-gray-500">No comments yet.</p>
               ) : (
                 [...comments].reverse().map((cmt, idx) => (
-                  <div key={idx} className="flex flex-row mb-5">
+                  <div key={idx} className="flex flex-row mb-3">
                     <div className="flex flex-col">
                       <img src={profile} className="w-13 h-13 rounded-[50%]" />
                     </div>
                     <div className="flex flex-col ml-5">
-                      <div className="flex flex-col bg-gray-200 p-3 rounded-md">
-                        <p className="text-sm font-medium">{cmt.commentedBy}</p>
-                        <p className="text-md text-gray-900">
+                      <div className="flex flex-col bg-gray-200 p-2 rounded-md">
+                        <p className="text-sm font-medium m-0">{cmt.commentedBy}</p>
+                        <p className="text-md text-gray-900 m-0">
                           {cmt.commentText}
                         </p>
                       </div>
