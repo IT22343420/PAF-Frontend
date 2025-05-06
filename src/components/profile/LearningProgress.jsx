@@ -123,7 +123,7 @@ function LearningProgress() {
   };
 
   return (
-    <div className="mt-10 border-2 border-gray-300 p-5 rounded-xl bg-white">
+    <div className="mt-10 border-2 border-gray-300 p-3 rounded-xl bg-white">
       <div className="flex flex-row">
         <button
           className="flex p-2 bg-indigo-600 text-white font-bold hover:bg-indigo-500 rounded-md"
@@ -132,7 +132,7 @@ function LearningProgress() {
           post your lerning progress
         </button>
       </div>
-      <h2 className="text-xl font-bold mb-4 mt-3">My Learning Progress</h2>
+      <p className="text-xl font-bold mb-4 mt-3">My Learning Progress</p>
 
       {progressList.length === 0 ? (
         <p className="text-gray-500">No progress updates yet.</p>
@@ -141,7 +141,7 @@ function LearningProgress() {
           {progressList.map((progress) => (
             <div
               key={progress.id}
-              className={`rounded-md p-5 shadow-md transition-all duration-300 bg-white ${
+              className={`rounded-md p-3 shadow-md transition-all duration-300 bg-white ${
                 progress.templateType === "Start Learning"
                   ? "hover:bg-blue-100 border-l-4 border-blue-500"
                   : progress.templateType === "Progressing"
@@ -149,7 +149,7 @@ function LearningProgress() {
                   : "hover:bg-green-100 border-l-4 border-green-500"
               }`}
             >
-              <h3 className="text-xl font-bold mb-2">{progress.title}</h3>
+              <p className="text-xl font-bold mb-2">{progress.title}</p>
               <p className="text-gray-700 mb-2">{progress.content}</p>
               <p className="text-sm text-gray-500">
                 Template: {progress.templateType}
@@ -159,7 +159,7 @@ function LearningProgress() {
               </p>
               <button
                 onClick={() => handleOpenUpdateModal(progress)}
-                className=" text-indigo-600 px-2 py-2 bg-white font-bold rounded-md hover:bg-blue-400 hover:text-white mt-5 border-2 border-blue-400"
+                className=" text-indigo-600 px-2 py-2 bg-white font-bold rounded-md hover:bg-blue-400 hover:text-white mt-3 border-2 border-blue-400"
               >
                 <FaEdit className="text-md" />
               </button>
@@ -177,9 +177,9 @@ function LearningProgress() {
       {isPopupOpen && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
           <div className="flex flex-col bg-white p-10 rounded-md w-150">
-            <h2 className="text-2xl font-bold mb-4">
+            <p className="text-2xl font-bold mb-4">
               Create Learning Progress
-            </h2>
+            </p>
             <form onSubmit={handleSubmit} className="flex flex-col">
               <input
                 type="text"
@@ -318,9 +318,9 @@ function LearningProgress() {
       {isUpdatePopupOpen && selectedProgress && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
           <div className="flex flex-col bg-white p-10 rounded-md w-150">
-            <h2 className="text-2xl font-bold mb-4">
+            <p className="text-2xl font-bold mb-4">
               Update Learning Progress
-            </h2>
+            </p>
             <form onSubmit={handleUpdateSubmit} className="flex flex-col">
               <input
                 type="text"

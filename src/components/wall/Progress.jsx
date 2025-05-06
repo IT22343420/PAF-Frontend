@@ -10,7 +10,7 @@ import { FaRegSmile } from "react-icons/fa";
 import { TiWarningOutline } from "react-icons/ti";
 import { IoIosSend } from "react-icons/io";
 
-import profile from "../../images/profile.jpg";
+import profile from "../../images/postImage.jpg";
 import start from "../../images/start.gif";
 import progressgif from "../../images/progress.gif";
 import completed from "../../images/completed.gif";
@@ -146,7 +146,7 @@ function Progress() {
                         I've just started my learning journey on this topic.
                         Excited to dive in and explore what's ahead! I Started
                         to learn{" "}
-                        <span className="font-bold">{progress.title}</span>
+                        <span className="font-bold text-blue-400">{progress.title}</span>
                       </p>
                     </>
                   )}
@@ -155,27 +155,27 @@ function Progress() {
                       <p className="text-md text-gray-600">
                         Making steady progress and gaining more insight every
                         day. Each step is a win! I am learning{" "}
-                        <span className="font-bold">{progress.title}</span>
+                        <span className="font-bold text-blue-400">{progress.title}</span>
                       </p>
                     </>
                   )}
-                  {progress.templateType === "Completed" && (
+                  {progress.templateType === "Completed Learning" && (
                     <>
                       <p className="text-md text-gray-600">
                         "Thrilled to complete this learning milestone! Proud of
                         the journey and the knowledge gained." I have completed{" "}
-                        <span className="font-bold">{progress.title}</span>
+                        <span className="font-bold text-blue-400">{progress.title}</span>
                       </p>
                     </>
                   )}
-                  {!["Start Learning", "Progressing", "Completed"].includes(
+                  {!["Start Learning", "Progressing", "Completed Learning"].includes(
                     progress.templateType
                   ) && (
                     <>
                       <p className="text-md text-gray-600">
                         Learning update posted keep going strong! i have
                         completed{" "}
-                        <span className="font-bold">{progress.title}</span>
+                        <span className="font-bold text-blue-400">{progress.title}</span>
                       </p>
                     </>
                   )}
@@ -191,7 +191,9 @@ function Progress() {
                         ? "bg-blue-200 "
                         : progress.templateType === "Progressing"
                         ? "bg-yellow-200 "
-                        : "bg-green-200 "
+                        : progress.templateType === "Completed Learning"
+                        ? "bg-rose-200 "
+                        : "bg-fuchsia-200 "
                     }`}
                   >
                     {progress.templateType === "Start Learning" && (
@@ -204,12 +206,12 @@ function Progress() {
                         <img src={progressgif} className="w-60 h-auto" />
                       </>
                     )}
-                    {progress.templateType === "Completed" && (
+                    {progress.templateType === "Completed Learning" && (
                       <>
                         <img src={completed} className="w-60 h-auto" />
                       </>
                     )}
-                    {!["Start Learning", "Progressing", "Completed"].includes(
+                    {!["Start Learning", "Progressing", "Completed Learning"].includes(
                       progress.templateType
                     ) && (
                       <>
