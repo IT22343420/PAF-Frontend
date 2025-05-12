@@ -1,6 +1,6 @@
 import React from 'react';
 import { Offcanvas, Button } from 'react-bootstrap';
-import NotificationItem from './NotificationItem'; // Reuse NotificationItem
+import NotificationItem from './NotificationItem';
 import PropTypes from 'prop-types';
 
 const NotificationPanel = ({ 
