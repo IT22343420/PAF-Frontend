@@ -51,7 +51,7 @@ const RegisterForm = () => {
                 password: '',
             });
             setValidated(false);
-            setTimeout(() => navigate('/login'), 2000);
+            setTimeout(() => navigate('/'), 2000);
         } catch (err) {
             const errorMessage = err.response && err.response.data ? err.response.data : 'Registration failed. Please try again.';
             console.error('Registration error:', errorMessage);
