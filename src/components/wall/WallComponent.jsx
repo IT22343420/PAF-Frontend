@@ -7,7 +7,7 @@ function WallComponent() {
     <div className="flex flex-col">
       <div className="flex flex-row">
         <NavLink
-          to="/"
+          to="/home"
           className={({ isActive }) =>
             `flex justify-center !no-underline items-center p-2 border-2 border-indigo-600 font-bold rounded-md mr-2 ${
               isActive
@@ -32,7 +32,6 @@ function WallComponent() {
         </NavLink>
       </div>
       <div className="flex flex-row mt-3">
-    
         <WallNavigation />
       </div>
     </div>

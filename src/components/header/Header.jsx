@@ -4,6 +4,7 @@ import { GoHomeFill } from "react-icons/go";
 import { MdNotificationsActive } from "react-icons/md";
 import { FaUserCircle } from "react-icons/fa";
 import { FaSearch } from "react-icons/fa";
+import { FiLogOut } from "react-icons/fi";
 import { Offcanvas, Button } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import NotificationPanel from "../notifications/NotificationPanel";
@@ -79,11 +80,16 @@ function Header() {
   const handleClosePanel = () => setShowPanel(false);
   const handleShowPanel = () => setShowPanel(true);
 
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/login');
+  };
+
   return (
     <>
       <div className="flex flex-row justify-between items-center px-[15%] w-max-[1200px] h-20 shadow-md bg-white sticky-top">
         <div className="flex flex-row items-center">
-          <SiEducative className="text-3xl text-indigo-600 mr-4 cursor-pointer" onClick={() => navigate("/")} />
+          <SiEducative className="text-3xl text-indigo-600 mr-4 cursor-pointer" onClick={() => navigate("/home")} />
           <div className="relative">
             <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
@@ -95,7 +101,7 @@ function Header() {
         <div className="flex flex-row items-center space-x-8">
           <GoHomeFill
             className={`text-2xl cursor-pointer ${currentPath === "/" ? "text-indigo-600" : "text-gray-600"} hover:text-indigo-600`}
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/home")}
             title="Home"
           />
           <div className="relative cursor-pointer" onClick={handleShowPanel} title="Notifications">
@@ -113,6 +119,11 @@ function Header() {
             className={`text-2xl cursor-pointer ${currentPath === "/profile" ? "text-indigo-600" : "text-gray-600"} hover:text-indigo-600`}
             onClick={() => navigate("/profile")}
             title="Profile"
+          />
+          <FiLogOut 
+            className="text-2xl text-gray-600 hover:text-indigo-600 cursor-pointer"
+            onClick={handleLogout}
+            title="Logout"
           />
         </div>
       </div>

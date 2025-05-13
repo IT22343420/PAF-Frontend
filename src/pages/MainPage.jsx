@@ -1,8 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import Header from "../components/header/Header";
 import NavigationCom from "../components/NavigationCom";
 
 function MainPage() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      navigate('/');
+    }
+  }, [navigate]);
+
   return (
     <div>
       <Header />

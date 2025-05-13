@@ -8,7 +8,7 @@ function WallNavigation() {
   return (
     <React.Fragment>
       <Routes>
-        <Route path="/" element={<PostsPage />} />
+        <Route path="/home" element={<PostsPage />} />
         <Route path="/progress" element={<Progress />} />
       </Routes>
     </React.Fragment>

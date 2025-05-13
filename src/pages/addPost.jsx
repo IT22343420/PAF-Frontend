@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Button, Container, Image, Row, Col } from 'react-bootstrap';
 import Notification from '../components/common/Notification';
 
@@ -16,6 +16,14 @@ const AddPost = () => {
   const [currentTag, setCurrentTag] = useState('');
   const [notification, setNotification] = useState(null);
   const navigate = useNavigate();
+
+
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      navigate('/');
+    }
+  }, [navigate]);
 
   const handleMediaChange = (e) => {
     const files = Array.from(e.target.files);
@@ -81,7 +89,7 @@ const AddPost = () => {
       type: 'success'
     });
     setTimeout(() => {
-      navigate("/");
+      navigate("/home");
     }, 1500);
   };
 

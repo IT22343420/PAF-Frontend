@@ -7,6 +7,13 @@ import Notification from '../components/common/Notification';
 const EditPost = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
+          navigate('/');
+        }
+      }, [navigate]);
     
     const [userName, setUserName] = useState('');
     const [headline, setHeadline] = useState('');
@@ -145,7 +152,7 @@ const EditPost = () => {
                 type: 'success'
             });
             setTimeout(() => {
-                navigate("/");
+                navigate("/home");
             }, 1500);
         } catch (error) {
             console.error('Error updating post:', error);
