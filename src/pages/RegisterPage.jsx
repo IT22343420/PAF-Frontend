@@ -5,7 +5,7 @@ import Header from '../components/header/Header';
 const RegisterPage = () => {
     return (
         <>
-            <Header />
+            {/* <Header /> */}
             <main>
                 <RegisterForm />
             </main>

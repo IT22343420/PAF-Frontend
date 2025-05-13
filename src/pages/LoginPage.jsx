@@ -5,7 +5,7 @@ import Header from '../components/header/Header';
 const LoginPage = () => {
     return (
         <>
-            <Header />
+            {/* <Header /> */}
             <main>
                 <LoginForm />
             </main>
