@@ -5,6 +5,8 @@ import CreatePlan from './pages/CreatePlan';
 import EditPlan from './pages/EditPlan';
 import SinglePlanView from './pages/SinglePlanView';
 import Navbar from './components/Navbar';
+import SkillBadges from './pages/SkillBadges';
+import ClaimBadges from './pages/ClaimBadges';
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
           <Route path="/create" element={<CreatePlan />} />
           <Route path="/edit/:id" element={<EditPlan />} />
           <Route path="/view/:id" element={<SinglePlanView />} />
+          <Route path="/skillbadges" element={<SkillBadges />} />
+          <Route path="/badges" element={<ClaimBadges/>} />
         </Routes>
       </div>
     </div>

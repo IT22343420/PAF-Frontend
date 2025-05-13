@@ -1,7 +1,10 @@
 // src/components/SideNav.jsx
 import { FaClipboardList, FaChartLine, FaCog, FaUserCircle } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom'; // ← Add this
 
 const SideNav = () => {
+  const navigate = useNavigate(); // ← Initialize the navigate function
+
   return (
     <div className="w-64 min-h-screen bg-[#f9f9f9] rounded-xl p-6 shadow-sm">
       {/* Profile Section */}
@@ -14,16 +17,18 @@ const SideNav = () => {
 
       {/* Menu Items */}
       <nav className="flex flex-col gap-2">
-        <NavItem icon={<FaClipboardList />} label="My Learning Plans" active />
-        <NavItem icon={<FaChartLine />} label="My Learning Progress" />
-        <NavItem icon={<FaCog />} label="My Badges" />
+        <NavItem icon={<FaClipboardList />} label="My Learning Plans" path="/" navigate={navigate} />
+        <NavItem icon={<FaChartLine />} label="My Learning Progress" path="/progress" navigate={navigate} />
+        <NavItem icon={<FaCog />} label="My Badges" path="/skillbadges" navigate={navigate} />
       </nav>
     </div>
   );
 };
 
-const NavItem = ({ icon, label, active }) => (
+// Updated NavItem to use path and navigate
+const NavItem = ({ icon, label, active, path, navigate }) => (
   <div
+    onClick={() => navigate(path)}
     className={`flex items-center gap-3 px-4 py-2 rounded-md cursor-pointer ${
       active
         ? 'bg-indigo-100 text-indigo-800 font-medium'

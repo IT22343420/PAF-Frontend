@@ -97,5 +97,36 @@ export const api = {
       console.error(`Error deleting plan ${id}:`, error);
       throw error;
     }
+  },
+
+  // =================== BADGE APIs ===================
+
+  getAllBadges: async () => {
+  try {
+    const response = await axios.get('/badges');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching badges:', error);
+    throw error;
   }
+},
+
+  claimBadge: async (badgeId) => {
+  try {
+    await axios.put(`/badges/claim/${badgeId}`); // ✅ use PUT and correct path
+  } catch (error) {
+    console.error(`Error claiming badge ${badgeId}:`, error);
+    throw error;
+  }
+},
+
+  createBadge: async (badge) => {
+    try {
+      await axios.post('/badges/add', badge);
+    } catch (error) {
+      console.error('Error creating badge:', error);
+      throw error;
+    }
+  }
+
 }; 
