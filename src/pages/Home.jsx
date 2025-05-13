@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
 import { api } from '../services/api';
+import SideNav from './SideNav';
 
 // Helper to display date as YYYY-MM-DD
 const displayDate = (dateStr) => dateStr ? dateStr.slice(0, 10) : '';
@@ -82,20 +83,21 @@ const Home = () => {
   }
 
   return (
+    
+    <div className="flex bg-[#f5f6fa] min-h-screen">
+      <SideNav/>
+    <div className="flex-1 p-6 overflow-y-auto">
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
+      
       <div style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center',
         marginBottom: '30px'
       }}>
-        <h1 style={{ 
-          color: '#1f2937',
-          fontSize: '24px',
-          fontWeight: '600'
-        }}>
-          Learning Plans
-        </h1>
+        <h1 className="text-2xl font-bold text-indigo-700 mb-4 flex items-center gap-2">
+        📋 Learning Plans
+      </h1>
         <Link 
           to="/create"
           style={{
@@ -321,6 +323,8 @@ const Home = () => {
           ))}
         </div>
       )}
+    </div>
+    </div>
     </div>
   );
 };
