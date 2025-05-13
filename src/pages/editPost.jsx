@@ -123,7 +123,6 @@ const EditPost = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData();
-        formData.append('headline', headline);
         formData.append('title', title);
         formData.append('description', description);
         formData.append('tags', tags);
@@ -174,7 +173,7 @@ const EditPost = () => {
             )}
             <h2 className="mb-4">Edit Post</h2>
             <Form onSubmit={handleSubmit}>
-                <Form.Group controlId="formUserName" className="mb-3">
+                {/* <Form.Group controlId="formUserName" className="mb-3">
                     <Form.Label className="fw-bold">User Name</Form.Label>
                     <Form.Control
                         type="text"
@@ -183,9 +182,9 @@ const EditPost = () => {
                         plaintext
                         className="text-muted"
                     />
-                </Form.Group>
+                </Form.Group> */}
 
-                <Form.Group controlId="formHeadline" className="mb-3">
+                {/* <Form.Group controlId="formHeadline" className="mb-3">
                     <Form.Label className="fw-bold">HeadLine</Form.Label>
                     <Form.Control
                         type="text"
@@ -194,7 +193,7 @@ const EditPost = () => {
                         required
                         placeholder="Enter your HeadLine"
                     />
-                </Form.Group>
+                </Form.Group> */}
 
                 <Form.Group controlId="formTitle" className="mb-3">
                     <Form.Label className="fw-bold">Title</Form.Label>

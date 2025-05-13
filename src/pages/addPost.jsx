@@ -6,8 +6,6 @@ import { useNavigate } from "react-router-dom";
 import PostService from '../services/postService';
 
 const AddPost = () => {
-  const [userName, setUserName] = useState('');
-  const [headline, setHeadline] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [mediaFiles, setMediaFiles] = useState([]);
@@ -73,8 +71,8 @@ const AddPost = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
+    const userName = localStorage.getItem('userName');
     formData.append('userName', userName);
-    formData.append('headline', headline);
     formData.append('title', title);
     formData.append('description', description);
     formData.append('tags', tags);
@@ -116,7 +114,7 @@ const AddPost = () => {
       )}
       <h2 className="mb-4">Add a New Post</h2>
       <Form onSubmit={handleSubmit}>
-        <Form.Group controlId="formUserName" className="mb-3">
+        {/* <Form.Group controlId="formUserName" className="mb-3">
           <Form.Label className="fw-bold">User Name</Form.Label>
           <Form.Control
             type="text"
@@ -135,7 +133,7 @@ const AddPost = () => {
             required
             placeholder="Enter your HeadLine"
           />
-        </Form.Group>
+        </Form.Group> */}
         <Form.Group controlId="formTitle" className="mb-3">
           <Form.Label className="fw-bold">Title</Form.Label>
           <Form.Control

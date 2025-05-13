@@ -39,7 +39,7 @@ const SinglePost = ({ post, profileImage, onDelete, onSetNotification }) => {
   const [commentInput, setCommentInput] = useState("");
   const [comments, setComments] = useState([]);
 
-  const profileName = "yuwani123";
+  const profileName = localStorage.getItem('userName');
 
   const handleLike = async (postId, userName) => {
     try {
@@ -120,7 +120,6 @@ const SinglePost = ({ post, profileImage, onDelete, onSetNotification }) => {
 
   const closeCommentModal = () => {
     setShowCommentModal(false);
-    setSelectedPost(null);
     setCommentInput("");
   };
 
@@ -173,7 +172,7 @@ const SinglePost = ({ post, profileImage, onDelete, onSetNotification }) => {
                 {/* Left Component */}
                 <Col md={4} className="position-relative">
                   <div className="d-flex align-items-center mb-2">
-                    <img
+                    {/* <img
                       src={profileImage}
                       alt="Profile"
                       className="rounded-circle me-2"
@@ -182,7 +181,7 @@ const SinglePost = ({ post, profileImage, onDelete, onSetNotification }) => {
                         height: "40px",
                         objectFit: "cover",
                       }}
-                    />
+                    /> */}
                     <div>
                       <div className="fw-bold">{userName}</div>
                       <div className="text-muted small">{headline}</div>

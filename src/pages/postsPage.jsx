@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Posts from '../components/posts/posts';
-import Header from '../components/header/Header';
 import Notification from '../components/common/Notification';
 
 const PostsPage = () => {

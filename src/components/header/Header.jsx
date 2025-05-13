@@ -9,6 +9,7 @@ import { Offcanvas, Button } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import NotificationPanel from "../notifications/NotificationPanel";
 import NotificationService from "../../services/NotificationService";
+import Notification from "../common/Notification";
 
 function Header() {
   const navigate = useNavigate();
@@ -18,6 +19,12 @@ function Header() {
   const [showPanel, setShowPanel] = useState(false);
   const [loadingNotifications, setLoadingNotifications] = useState(true);
   const [error, setError] = useState(null);
+
+  const [notificationProps, setNotificationProps] = useState({ message: null, type: 'success', key: 0 });
+
+  const displayNotification = (message, type = 'success') => {
+    setNotificationProps({ message, type, key: Date.now() });
+  };
 
   useEffect(() => {
     const performFetch = async () => {
@@ -57,10 +64,11 @@ function Header() {
 
     try {
       await NotificationService.deleteNotification(id);
+      displayNotification('Notification cleared.', 'success');
     } catch (err) {
       console.error(`Error deleting notification ${id}:`, err);
       setNotifications(originalNotifications);
-      alert("Failed to delete notification. Please try again.");
+      displayNotification('Failed to delete notification. Please try again.', 'danger');
     }
   };
 
@@ -70,10 +78,11 @@ function Header() {
 
     try {
       await NotificationService.deleteAllNotifications();
+      displayNotification('All notifications cleared.', 'success');
     } catch (err) {
       console.error("Error deleting all notifications:", err);
       setNotifications(originalNotifications);
-      alert("Failed to clear notifications. Please try again.");
+      displayNotification('Failed to clear all notifications. Please try again.', 'danger');
     }
   };
 
@@ -87,6 +96,14 @@ function Header() {
 
   return (
     <>
+      {notificationProps.message && (
+        <Notification 
+          key={notificationProps.key} 
+          message={notificationProps.message} 
+          type={notificationProps.type} 
+          onClose={() => setNotificationProps({ message: null, type: 'success', key: 0 })} 
+        />
+      )}
       <div className="flex flex-row justify-between items-center px-[15%] w-max-[1200px] h-20 shadow-md bg-white sticky-top">
         <div className="flex flex-row items-center">
           <SiEducative className="text-3xl text-indigo-600 mr-4 cursor-pointer" onClick={() => navigate("/home")} />
