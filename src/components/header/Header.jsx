@@ -19,23 +19,36 @@ function Header() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchNotifications = async () => {
-      setLoadingNotifications(true);
-      setError(null);
-      try {
-        const response = await NotificationService.getAllNotifications();
-        setNotifications(response.data || []);
-      } catch (err) {
-        console.error("Error fetching notifications:", err);
-        setError("Failed to load notifications.");
-        setNotifications([]);
-      } finally {
-        setLoadingNotifications(false);
+    const performFetch = async () => {
+      if (loadingNotifications) {
+        setError(null);
+        try {
+          const response = await NotificationService.getAllNotifications();
+          setNotifications(response.data || []);
+        } catch (err) {
+          console.error("Error fetching notifications:", err);
+          setError("Failed to load initial notifications.");
+          setNotifications([]);
+        } finally {
+          setLoadingNotifications(false);
+        }
+      } else {
+        try {
+          const response = await NotificationService.getAllNotifications();
+          setNotifications(response.data || []);
+          setError(null);
+        } catch (err) {
+          console.error("Error polling notifications:", err);
+        }
       }
     };
 
-    fetchNotifications();
-  }, []);
+    performFetch();
+
+    const intervalId = setInterval(performFetch, 5000);
+
+    return () => clearInterval(intervalId);
+  }, [loadingNotifications]);
 
   const handleClearNotification = async (id) => {
     const originalNotifications = [...notifications];
