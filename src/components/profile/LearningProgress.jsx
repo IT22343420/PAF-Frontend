@@ -11,11 +11,15 @@ import { deleteProgress } from "../../services/progressService";
 import { FaEdit } from "react-icons/fa";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 
+
 function LearningProgress() {
+  const profileUserName = localStorage.getItem('userName');
+  const profileName = localStorage.getItem('name');
+  
   const [progressList, setProgressList] = useState([]);
   const [isPopupOpen, setPopupOpen] = useState(false);
   const [formData, setFormData] = useState({
-    userId: "poornima123",
+    userId: profileUserName,
     title: "",
     content: "",
     templateType: "",
@@ -24,6 +28,8 @@ function LearningProgress() {
   const [isUpdatePopupOpen, setIsUpdatePopupOpen] = useState(false);
   const [selectedProgress, setSelectedProgress] = useState(null);
 
+  
+
   const handleOpenModal = () => {
     setPopupOpen(true);
   };
@@ -31,7 +37,7 @@ function LearningProgress() {
   const handleCloseModal = () => {
     setPopupOpen(false);
     setFormData({
-      userId: "poornima123",
+      userId:profileUserName,
       title: "",
       content: "",
       templateType: "",
@@ -56,7 +62,7 @@ function LearningProgress() {
   }, [isPopupOpen]);
 
   const loadUserProgress = () => {
-    getUserProgress("poornima123")
+    getUserProgress(profileUserName)
       .then((response) => {
         setProgressList(response.data);
       })

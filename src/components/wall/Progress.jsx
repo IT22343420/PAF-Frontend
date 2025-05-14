@@ -10,12 +10,15 @@ import { FaRegSmile } from "react-icons/fa";
 import { TiWarningOutline } from "react-icons/ti";
 import { IoIosSend } from "react-icons/io";
 
-import profile from "../../images/postImage.jpg";
+import profile from "../../images/profile.jpg";
 import start from "../../images/start.gif";
 import progressgif from "../../images/progress.gif";
 import completed from "../../images/completed.gif";
 
 function Progress() {
+  const profileName = localStorage.getItem('name');
+  const currentUserId = localStorage.getItem('userName');
+
   const [progressList, setProgressList] = useState([]);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
@@ -25,7 +28,7 @@ function Progress() {
   const [comments, setComments] = useState([]);
   const [refresh, setRefresh] = useState("false");
 
-  const currentUserId = "poornima123";
+  
 
   useEffect(() => {
     loadAllProgress();
@@ -66,7 +69,7 @@ function Progress() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          commentedBy: "poornima123",
+          commentedBy: profileName,
           commentText: commentInput,
         }),
       }

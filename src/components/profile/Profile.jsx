@@ -2,10 +2,13 @@ import React, { useState } from "react";
 
 import { NavLink } from "react-router-dom";
 
-import profile from "../../images/postImage.jpg";
+import profile from "../../images/profile.jpg";
 import ProfileNavigationCom from "./ProfileNavigationCom";
 
 function Profile() {
+  const profileName = localStorage.getItem('name');
+  const profileUserName = localStorage.getItem('userName');
+
   return (
     <div className="flex flex-col mt-5 w-[100%] max-w-[1200px]">
       <div className="flex flex-row items-center shadow-md rounded-md w-[100%] h-auto p-10">
@@ -13,8 +16,8 @@ function Profile() {
           <img src={profile} className="w-30 h-30 rounded-[50%]" />
         </div>
         <div className="ml-5">
-          <p className="text-2xl font-bold m-0">Poornima Thennakoon</p>
-          <p className="text-gray-800 m-0">poornimathennakoon@gmail.com</p>
+          <p className="text-2xl font-bold m-0">{profileName}</p>
+          <p className="text-gray-800 m-0">{profileUserName}</p>
           <div className="flex flex-row">
             <div className="flex justify-center h-6 w-10 rounded-md bg-indigo-600 text-white m-2">
               <p className="text-sm">java</p>
