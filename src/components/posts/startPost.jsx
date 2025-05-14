@@ -23,12 +23,6 @@ const StartPost = () => {
                     fontWeight: '600'
                 }}
             >
-                {/* <img 
-                    src="/profileImages/1.jpeg" 
-                    alt="Profile" 
-                    className="rounded-circle"
-                    style={{ width: '40px', height: '40px', objectFit: 'cover' }}
-                /> */}
                 <PencilSquare size={20} />
                 <span>Start a post</span>
             </Button>
