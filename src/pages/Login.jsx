@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Form, Input, Button, message } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import './Auth.css';
-import axios from 'axios';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { Button, Form, Input, message } from "antd";
+import "../App.css";
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
@@ -12,75 +11,36 @@ const Login = () => {
   const onFinish = async (values) => {
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', values);
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-      message.success('Login successful!');
-      navigate('/profile');
+      const response = await axios.post("http://localhost:8080/api/users/login", values);
+      message.success("Login successful!");
+
+      // Store full user object in localStorage
+      localStorage.setItem("user", JSON.stringify(response.data));
+
+      navigate("/profile");
     } catch (error) {
-      message.error(error.response?.data?.message || 'Login failed. Please check your credentials.');
+      message.error(error.response?.data?.message || "Login failed.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-box">
-        <h2>Login</h2>
-        <Form
-          name="login"
-          onFinish={onFinish}
-          autoComplete="off"
-        >
-          <Form.Item
-            name="email"
-            rules={[
-              { required: true, message: 'Please input your email!' },
-              { type: 'email', message: 'Please enter a valid email!' }
-            ]}
-          >
-            <Input
-              prefix={<UserOutlined />}
-              placeholder="Email"
-              size="large"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="password"
-            rules={[
-              { required: true, message: 'Please input your password!' },
-              { min: 6, message: 'Password must be at least 6 characters!' }
-            ]}
-          >
-            <Input.Password
-              prefix={<LockOutlined />}
-              placeholder="Password"
-              size="large"
-            />
-          </Form.Item>
-
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={loading}
-              block
-              size="large"
-            >
-              Login
-            </Button>
-          </Form.Item>
-
-          <div className="auth-links">
-            <Link to="/register">Don't have an account? Register</Link>
-            <Link to="/forgot-password">Forgot Password?</Link>
-          </div>
-        </Form>
-      </div>
+    <div className="login-container">
+      <h1 className="text-3xl mb-8 font-semibold text-center">Login</h1>
+      <Form layout="vertical" onFinish={onFinish}>
+        <Form.Item label="Email" name="email" rules={[{ required: true }]}>
+          <Input type="email" />
+        </Form.Item>
+        <Form.Item label="Password" name="password" rules={[{ required: true }]}>
+          <Input.Password />
+        </Form.Item>
+        <Button type="primary" htmlType="submit" loading={loading} className="w-full">
+          Login
+        </Button>
+      </Form>
     </div>
   );
 };
 
-export default Login; 
+export default Login;
