@@ -6,6 +6,7 @@ import profile from "../../images/postImage.jpg";
 import ProfileNavigationCom from "./ProfileNavigationCom";
 
 function Profile() {
+  
   return (
     <div className="flex flex-col mt-5 w-[100%] max-w-[1200px]">
       <div className="flex flex-row items-center shadow-md rounded-md w-[100%] h-auto p-10">
