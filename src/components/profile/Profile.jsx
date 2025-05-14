@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 
 import profile from "../../images/postImage.jpg";
 import ProfileNavigationCom from "./ProfileNavigationCom";
-
+//create profile
 function Profile() {
   
   return (
