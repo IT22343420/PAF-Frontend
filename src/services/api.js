@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8081';
+const API_BASE_URL = 'http://localhost:8081/api';
 
 // Configure axios defaults
 axios.defaults.baseURL = API_BASE_URL;
@@ -13,19 +13,19 @@ const convertToBackendFormat = (plan) => {
     planName: plan.planName,
     plandesc: plan.plandesc,
     completedate: plan.completedate,
-    topic: plan.topics?.[0]?.name || '', // Take first topic name or empty string
-    resourceLink: plan.topics?.[0]?.resourceLink || '', // Take first topic resource link or empty string
-    status: plan.status === 'Completed', // Convert string status to boolean
-    targetdate: plan.topics?.[0]?.targetDate || plan.targetdate, // Take first topic target date or plan target date
+    topic: plan.topics?.[0]?.name || '', 
+    resourceLink: plan.topics?.[0]?.resourceLink || '', 
+    status: plan.status === 'Completed',
+    targetdate: plan.topics?.[0]?.targetDate || plan.targetdate,
     createddate: plan.createddate,
-    updateddate: plan.updateddate || new Date().toISOString() // Only set new date if not already present
+    updateddate: plan.updateddate || new Date().toISOString() 
   };
 };
 
 // Helper function to convert from backend to frontend format
 const convertToFrontendFormat = (plan) => {
   return {
-    planId: plan.planId || plan._id, // Use planId if present, otherwise _id from MongoDB
+    planId: plan.planId || plan._id, 
     planName: plan.planName,
     plandesc: plan.plandesc,
     completedate: plan.completedate,
@@ -45,10 +45,13 @@ const convertToFrontendFormat = (plan) => {
 
 // API functions
 export const api = {
+
+  // ============================ LEARNING PLAN APIS ==============================
+
   // Get all plans
   getAllPlans: async () => {
     try {
-      const response = await axios.get('/fetchPlans');
+      const response = await axios.get(`${API_BASE_URL}/plans`);
       return response.data.map(convertToFrontendFormat);
     } catch (error) {
       console.error('Error fetching plans:', error);
@@ -59,7 +62,7 @@ export const api = {
   // Get single plan
   getPlan: async (id) => {
     try {
-      const response = await axios.get(`/getPlan/${id}`);
+      const response = await axios.get(`/plans/${id}`);
       return convertToFrontendFormat(response.data);
     } catch (error) {
       console.error(`Error fetching plan ${id}:`, error);
@@ -71,7 +74,7 @@ export const api = {
   createPlan: async (plan) => {
     try {
       const backendPlan = convertToBackendFormat(plan);
-      await axios.post('/addPlan', backendPlan);
+      await axios.post('/plans', backendPlan);
     } catch (error) {
       console.error('Error creating plan:', error);
       throw error;
@@ -82,7 +85,7 @@ export const api = {
   updatePlan: async (plan) => {
     try {
       const backendPlan = convertToBackendFormat(plan);
-      await axios.put('/updatePlan', backendPlan);
+      await axios.put(`/plans/${plan.planId}`, backendPlan);
     } catch (error) {
       console.error(`Error updating plan ${plan.planId}:`, error);
       throw error;
@@ -92,7 +95,7 @@ export const api = {
   // Delete plan
   deletePlan: async (id) => {
     try {
-      await axios.delete(`/deletePlan/${id}`);
+      await axios.delete(`/plans/${id}`);
     } catch (error) {
       console.error(`Error deleting plan ${id}:`, error);
       throw error;
@@ -113,7 +116,7 @@ export const api = {
 
   claimBadge: async (badgeId) => {
   try {
-    await axios.put(`/badges/claim/${badgeId}`); // ✅ use PUT and correct path
+    await axios.put(`/badges/${badgeId}/claim`);
   } catch (error) {
     console.error(`Error claiming badge ${badgeId}:`, error);
     throw error;
@@ -122,7 +125,7 @@ export const api = {
 
   createBadge: async (badge) => {
     try {
-      await axios.post('/badges/add', badge);
+      await axios.post('/badges', badge);
     } catch (error) {
       console.error('Error creating badge:', error);
       throw error;

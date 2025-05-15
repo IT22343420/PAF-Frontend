@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
 import { Link } from 'react-router-dom';
+import SideNav from './SideNav';
 
 const ClaimBadges = () => {
   const [badges, setBadges] = useState([]);
@@ -39,8 +40,11 @@ const ClaimBadges = () => {
   };
 
   return (
+    <div className="flex bg-[#f5f6fa] min-h-screen">
+      <SideNav />
+      <div className="flex-1 p-6 overflow-y-auto">
     <div className="flex flex-col items-center min-h-screen p-6 bg-[#f5f6fa]">
-      <h1 className="text-2xl font-bold text-indigo-700 mb-4">All Available Badges</h1>
+      <h1 className="text-2xl font-bold text-indigo-700 mb-4">Claim My Badges</h1>
       {error && <div className="text-red-500 mb-4">{error}</div>}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {badges.map((badge) => (
@@ -63,6 +67,8 @@ const ClaimBadges = () => {
         ))}
       </div>
       <Link to="/skillbadges" className="mt-6 text-blue-600">Go Back</Link>
+    </div>
+    </div>
     </div>
   );
 };
