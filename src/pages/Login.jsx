@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import { Button, Form, Input, message } from "antd";
+import { Button, Form, Input, message, Space } from "antd";
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import "../App.css";
 
@@ -26,8 +26,8 @@ const Login = () => {
 
   return (
     <div className="auth-container">
+      <h2>Login</h2>
       <div className="auth-box">
-        <h2>Login</h2>
         <Form
           name="login"
           onFinish={onFinish}
@@ -74,8 +74,10 @@ const Login = () => {
           </Form.Item>
 
           <div className="auth-links">
-            <Link to="/register">Don't have an account? Register</Link>
-            <Link to="/forgot-password">Forgot Password?</Link>
+            <Space>
+              <Link to="/register">Don't have an account? Register</Link>
+              <Link to="/forgot-password">Forgot Password?</Link>
+            </Space>
           </div>
         </Form>
       </div>

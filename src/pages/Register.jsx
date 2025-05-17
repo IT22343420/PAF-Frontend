@@ -35,7 +35,7 @@ const Register = () => {
         <Form.Item label="Email" name="email" rules={[{ required: true }]}>
           <Input type="email" />
         </Form.Item>
-        <Form.Item label="Password" name="password" rules={[{ required: true }]}>
+        <Form.Item label="Password" name="password" rules={[{ required: true }, { min: 6, message: 'Password must be at least 6 characters!' }]}>
           <Input.Password />
         </Form.Item>
         <Form.Item label="Role" name="role" rules={[{ required: true }]}>

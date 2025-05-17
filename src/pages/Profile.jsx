@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Button, Form, Input, Select, Space, Modal, message, Avatar } from 'antd';
+import { Card, Button, Form, Input, Select, Space, Modal, message, Avatar, Upload } from 'antd';
 import { EditOutlined, DeleteOutlined, LogoutOutlined, UserOutlined, MailOutlined, HomeOutlined, BookOutlined, BarChartOutlined, TrophyOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import './Profile.css';
@@ -15,6 +15,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [profileImage, setProfileImage] = useState(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -109,7 +110,22 @@ const Profile = () => {
     <div className="profile-page-layout">
       {/* Left Sidebar */}
       <div className="profile-sidebar">
-        <Avatar size={80} icon={<UserOutlined />} style={{ marginBottom: 16 }} />
+        <Upload
+          name="avatar"
+          listType="picture-circle"
+          className="avatar-uploader"
+          showUploadList={false}
+          beforeUpload={() => false} // Prevent automatic upload
+          onChange={(info) => setProfileImage(info.file)}
+        >
+          {profileImage ? (
+            <Avatar size={80} src={URL.createObjectURL(profileImage)} icon={<UserOutlined />} />
+          ) : userData?.avatar ? (
+            <Avatar size={80} src={userData.avatar} icon={<UserOutlined />} />
+          ) : (
+            <Avatar size={80} icon={<UserOutlined />} />
+          )}
+        </Upload>
         <div className="profile-sidebar-name">{userData.name}</div>
         <div className="profile-sidebar-email">{userData.email}</div>
         <div className="profile-sidebar-links">
@@ -133,7 +149,7 @@ const Profile = () => {
         <Card
           title="Profile Information"
           extra={
-            <>
+            <Space>
               <Button
                 type="primary"
                 icon={<EditOutlined />}
@@ -155,7 +171,7 @@ const Profile = () => {
               >
                 Logout
               </Button>
-            </>
+            </Space>
           }
         >
           {isEditing ? (
