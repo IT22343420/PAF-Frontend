@@ -11,7 +11,7 @@ import { deleteProgress } from "../../services/progressService";
 import { FaEdit } from "react-icons/fa";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 
-
+//created learningProgress function
 function LearningProgress() {
   const profileUserName = localStorage.getItem('userName');
   const profileName = localStorage.getItem('name');
