@@ -1,4 +1,4 @@
-import React from "react";
+/*import React from "react";
 import { Routes, Route } from "react-router-dom";
 
 import WallComponent from "./wall/WallComponent";
@@ -16,3 +16,4 @@ function NavigationCom() {
 }
 
 export default NavigationCom;
+*/

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Button, Form, Input, Select, Space, Modal, message } from 'antd';
-import { EditOutlined, DeleteOutlined, LogoutOutlined, UserOutlined, MailOutlined, HomeOutlined } from '@ant-design/icons';
+import { Card, Button, Form, Input, Select, Space, Modal, message, Avatar } from 'antd';
+import { EditOutlined, DeleteOutlined, LogoutOutlined, UserOutlined, MailOutlined, HomeOutlined, BookOutlined, BarChartOutlined, TrophyOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import './Profile.css';
 

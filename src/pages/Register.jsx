@@ -11,11 +11,11 @@ const Register = () => {
   const onFinish = async (values) => {
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:8080/api/users/register", values);
+      const response = await axios.post("http://localhost:5000/api/users/register", values);
       message.success("Registration successful!");
 
       // Save user data to localStorage after registration (optional)
-      localStorage.setItem("user", JSON.stringify(response.data));
+      localStorage.setItem("user", JSON.stringify(response.data.user));
 
       navigate("/profile");
     } catch (error) {
