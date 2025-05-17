@@ -122,19 +122,16 @@ const Home = () => {
 
             <Link 
               to="/create"
+              className="text-white px-4 py-2 rounded transition no-underline"
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '8px 16px',
-                backgroundColor: '#2563eb',
-                color: 'white',
+                backgroundColor: 'rgba(55, 48, 163, 1)',
                 textDecoration: 'none',
-                borderRadius: '4px',
-                fontWeight: '500'
+                whiteSpace: 'nowrap',
               }}
-            >
-              <FaPlus /> Create New Plan
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(44, 39, 130, 1)'}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = 'rgba(55, 48, 163, 1)'}
+                        >
+              Create New Plan
             </Link>
           </div>
 

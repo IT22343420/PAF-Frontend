@@ -8,24 +8,27 @@ const SideNav = () => {
   return (
     <div className="w-64 min-h-screen bg-[#f9f9f9] rounded-xl p-6 shadow-sm">
       {/* Profile Section */}
-<div className="flex flex-col items-center mb-6">
-  <FaUserCircle className="text-indigo-400 text-5xl mb-2" />
-  <h2
-    className="text-lg font-bold"
-    style={{ 
-      fontSize: '20px',
-      color: 'rgba(55,48,163,1)' }}
-  >
-    Lithara Bambarendage
-  </h2>
-  <p
-    className="text-sm"
-    style={{ color: 'rgba(55,48,163,1)' }}
-  >
-    litharabambarendage@gmail.com
-  </p>
-  <hr className="w-full mt-4 border-gray-300" />
-</div>
+      <div className="flex flex-col items-center mb-6">
+        <FaUserCircle className="text-indigo-700 text-5xl mb-2" />
+        <h2
+          
+          style={{ 
+            fontSize: '18px',
+            fontWeight: '700',
+            color: 'rgba(55,48,163,1)' }}
+        >
+          Lithara Bambarendage
+        </h2>
+        <p
+          className="text-sm"
+          style={{ 
+            fontSize: '12px',
+            color: 'rgba(55,48,163,1)' }}
+        >
+          litharabambarendage@gmail.com
+        </p>
+        <hr className="w-full mt-4 border-gray-300" />
+      </div>
 
 
       {/* Menu Items */}
