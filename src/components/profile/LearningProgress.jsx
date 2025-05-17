@@ -37,7 +37,7 @@ function LearningProgress() {
       templateType: "",
     });
   };
-
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     createProgress(formData)
