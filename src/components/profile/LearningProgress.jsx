@@ -20,7 +20,7 @@ function LearningProgress() {
     content: "",
     templateType: "",
   });
-//change a code in UpdatePopupOpen
+
   const [isUpdatePopupOpen, setIsUpdatePopupOpen] = useState(false);
   const [selectedProgress, setSelectedProgress] = useState(null);
 
