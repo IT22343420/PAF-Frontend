@@ -4,6 +4,8 @@ import { Card, Button, Form, Input, Select, Space, Modal, message, Avatar } from
 import { EditOutlined, DeleteOutlined, LogoutOutlined, UserOutlined, MailOutlined, HomeOutlined, BookOutlined, BarChartOutlined, TrophyOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import './Profile.css';
+import 'antd/dist/reset.css'; // for Ant Design v5 styling
+
 
 const { Option } = Select;
 
@@ -61,31 +63,36 @@ const Profile = () => {
   };
 
   const handleDelete = () => {
-    Modal.confirm({
-      title: 'Delete Profile',
-      content: 'Are you sure you want to delete your profile? This action cannot be undone.',
-      okText: 'Yes',
-      okType: 'danger',
-      cancelText: 'No',
-      onOk: async () => {
-        try {
-          const token = localStorage.getItem('token');
-          // Use id or _id, whichever exists
-          const userId = userData._id || userData.id;
-          await axios.delete(`http://localhost:5000/api/users/${userId}`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          message.success('Profile deleted successfully!');
-          navigate('/login');
-        } catch (error) {
-          message.error('Failed to delete profile. Please try again.');
-        }
-      },
-    });
-  };
+  console.log("Delete button clicked");
 
+  Modal.confirm({
+    title: 'Delete Profile',
+    content: 'Are you sure you want to delete your profile? This action cannot be undone.',
+    okText: 'Yes',
+    okType: 'danger',
+    cancelText: 'No',
+    onOk: async () => {
+      const token = localStorage.getItem('token');
+      const userId = userData._id || userData.id;
+
+      try {
+        await axios.delete(`http://localhost:5000/api/users/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        message.success('Profile deleted successfully!');
+        navigate('/login');
+      } catch (err) {
+        console.error(err);
+        message.error('Failed to delete profile.');
+      }
+    },
+    onCancel() {
+      console.log('Delete cancelled');
+    },
+  });
+};
   const handleLogout = () => {
     localStorage.removeItem('user');
     navigate('/login');
@@ -126,7 +133,7 @@ const Profile = () => {
         <Card
           title="Profile Information"
           extra={
-            <Space>
+            <>
               <Button
                 type="primary"
                 icon={<EditOutlined />}
@@ -138,7 +145,7 @@ const Profile = () => {
               <Button
                 danger
                 icon={<DeleteOutlined />}
-                onClick={handleDelete}
+                onClick={() => handleDelete()}
               >
                 Delete
               </Button>
@@ -148,7 +155,7 @@ const Profile = () => {
               >
                 Logout
               </Button>
-            </Space>
+            </>
           }
         >
           {isEditing ? (
