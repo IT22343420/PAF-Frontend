@@ -20,7 +20,7 @@ function LearningProgress() {
     content: "",
     templateType: "",
   });
-
+//changed select progress
   const [isUpdatePopupOpen, setIsUpdatePopupOpen] = useState(false);
   const [selectedProgress, setSelectedProgress] = useState(null);
 
