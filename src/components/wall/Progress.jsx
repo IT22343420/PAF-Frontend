@@ -9,6 +9,7 @@ import EmojiPicker from "emoji-picker-react";
 import { FaRegSmile } from "react-icons/fa";
 import { TiWarningOutline } from "react-icons/ti";
 import { IoIosSend } from "react-icons/io";
+import { MdDeleteForever } from "react-icons/md";
 
 import profile from "../../images/profile.jpg";
 import start from "../../images/start.gif";
@@ -27,6 +28,7 @@ function Progress() {
   const [commentInput, setCommentInput] = useState("");
   const [comments, setComments] = useState([]);
   const [refresh, setRefresh] = useState("false");
+  const [selectedProgress, setSelectedProgress] = useState([]);
 
   
 
@@ -48,6 +50,7 @@ function Progress() {
     setSelectedPost(post);
     setComments(post.comments || []);
     setShowCommentModal(true);
+    setSelectedProgress(post);
   };
 
   const closeCommentModal = () => {
@@ -113,6 +116,24 @@ function Progress() {
   const handleEmojiClick = (emojiData) => {
     setCommentInput((prev) => prev + emojiData.emoji);
   };
+
+  const handleDeleteComment = async (progressId, commentId) => {
+    try {
+      await axios.delete(
+        `http://localhost:8080/api/progress/${progressId}/comment/${commentId}`,
+        {
+          params: { commentedBy:profileName },
+        }
+      );
+
+      setComments((prev) => prev.filter((c) => c.id !== commentId));
+      setRefresh("true");
+    } catch (err) {
+      console.error("Error deleting comment:", err);
+      alert("You are not allowed to delete this comment.");
+    }
+  };
+
 
   return (
     <div className="flex flex-col px-4">
@@ -304,6 +325,16 @@ function Progress() {
                         <p className="text-md text-gray-900 m-0">
                           {cmt.commentText}
                         </p>
+                        {cmt.commentedBy === profileName && (
+                          <button
+                            onClick={() =>
+                              handleDeleteComment(selectedProgress.id, cmt.id)
+                            }
+                            className="flex justify-end items-end"
+                          >
+                            <MdDeleteForever className="text-gray-400 hover:text-red-600 text-xl mt-2" />
+                          </button>
+                        )}
                       </div>
                       <p className="text-xs text-gray-400">
                         {cmt.commentedAt?.substring(0, 19).replace("T", " ")}
