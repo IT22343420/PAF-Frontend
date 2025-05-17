@@ -10,7 +10,7 @@ import { deleteProgress } from "../../services/progressService";
 
 import { FaEdit } from "react-icons/fa";
 import { RiDeleteBin6Fill } from "react-icons/ri";
-//created learning progress
+
 function LearningProgress() {
   const [progressList, setProgressList] = useState([]);
   const [isPopupOpen, setPopupOpen] = useState(false);
@@ -20,7 +20,7 @@ function LearningProgress() {
     content: "",
     templateType: "",
   });
-
+//change a code in UpdatePopupOpen
   const [isUpdatePopupOpen, setIsUpdatePopupOpen] = useState(false);
   const [selectedProgress, setSelectedProgress] = useState(null);
 
