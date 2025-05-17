@@ -50,7 +50,7 @@ function LearningProgress() {
         toast.error("Error posting progress!");
       });
   };
-
+//change useEffect function
   useEffect(() => {
     loadUserProgress();
   }, [isPopupOpen]);
