@@ -15,7 +15,7 @@ const convertToBackendFormat = (plan) => {
     completedate: plan.completedate,
     topic: plan.topics?.[0]?.name || '', 
     resourceLink: plan.topics?.[0]?.resourceLink || '', 
-    status: plan.status === 'Completed',
+    status: plan.status || '',
     targetdate: plan.topics?.[0]?.targetDate || plan.targetdate,
     createddate: plan.createddate,
     updateddate: plan.updateddate || new Date().toISOString() 
@@ -25,23 +25,24 @@ const convertToBackendFormat = (plan) => {
 // Helper function to convert from backend to frontend format
 const convertToFrontendFormat = (plan) => {
   return {
-    planId: plan.planId || plan._id, 
+    planId: plan.planId || plan._id,
     planName: plan.planName,
     plandesc: plan.plandesc,
-    completedate: plan.completedate,
-    targetdate: plan.targetdate,
-    status: plan.status ? 'Completed' : 'Pending',
+    completedate: plan.completedate ? plan.completedate.slice(0, 10) : '',
+    targetdate: plan.targetdate ? plan.targetdate.slice(0, 10) : '',
+    status: plan.status,
     createddate: plan.createddate,
     updateddate: plan.updateddate,
     topics: [{
       id: 1,
       name: plan.topic || '',
       resourceLink: plan.resourceLink || '',
-      targetDate: plan.targetdate,
-      status: plan.status ? 'Completed' : 'Pending'
+      targetDate: plan.targetdate ? plan.targetdate.slice(0, 10) : '',
+      status: plan.status,
     }]
   };
 };
+
 
 // API functions
 export const api = {

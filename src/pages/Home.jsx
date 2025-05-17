@@ -165,8 +165,10 @@ const Home = () => {
                 <span style={{ 
                   padding: '4px 8px',
                   borderRadius: '4px',
-                  backgroundColor: plan.status === 'Completed' ? '#dcfce7' : '#fef3c7',
-                  color: plan.status === 'Completed' ? '#166534' : '#92400e',
+                  backgroundColor: plan.status === 'Completed' ? '#dcfce7' : 
+                                        plan.status === 'In Progress' ? '#dbeafe' : '#fef3c7',
+                          color: plan.status === 'Completed' ? '#166534' : 
+                                plan.status === 'In Progress' ? '#1e40af' : '#92400e',
                   fontSize: '14px',
                   fontWeight: '500'
                 }}>

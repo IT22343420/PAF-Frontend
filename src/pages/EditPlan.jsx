@@ -261,6 +261,7 @@ const EditPlan = () => {
                   </label>
                   <input
                     type="date"
+                    name="targetdate"
                     value={topic.targetDate}
                     onChange={(e) => handleTopicChange(index, 'targetDate', e.target.value)}
                     required
@@ -283,17 +284,12 @@ const EditPlan = () => {
                   <select
                     value={topic.status}
                     onChange={(e) => handleTopicChange(index, 'status', e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '8px',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '4px'
-                    }}
                   >
                     <option value="Pending">Pending</option>
                     <option value="In Progress">In Progress</option>
                     <option value="Completed">Completed</option>
                   </select>
+
                 </div>
               </div>
             ))}

@@ -11,13 +11,13 @@ const CreatePlan = () => {
     plandesc: '',
     completedate: '',
     targetdate: '',
-    status: 'Pending',
+    status: '',
     topics: [{
       id: Date.now(),
       name: '',
       resourceLink: '',
       targetDate: '',
-      status: 'Pending'
+      status: ''
     }]
   });
   const [error, setError] = useState(null);
@@ -53,7 +53,7 @@ const CreatePlan = () => {
           name: '',
           resourceLink: '',
           targetDate: '',
-          status: 'Pending'
+          status: ''
         },
       ],
     });
