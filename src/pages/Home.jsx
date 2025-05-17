@@ -293,16 +293,23 @@ const Home = () => {
                       <Link 
                         to={`/view/${plan.planId}`}
                         style={{
+                          backgroundColor: '#10b981',            // Green base color
+                          color: 'white',
+                          padding: '10px 18px',
+                          borderRadius: 6,
                           display: 'flex',
                           alignItems: 'center',
-                          gap: '8px',
-                          padding: '8px 16px',
-                          backgroundColor: '#10b981',
-                          color: 'white',
+                          gap: 8,
+                          fontWeight: 600,
+                          fontSize: 14,
+                          boxShadow: '0 2px 6px rgba(16, 185, 129, 0.4)',
+                          transition: 'background-color 0.3s',
                           textDecoration: 'none',
-                          borderRadius: '4px',
-                          fontWeight: '500'
+                          userSelect: 'none'
                         }}
+                        onMouseEnter={e => e.currentTarget.style.backgroundColor = '#059669'} // Darker green
+                        onMouseLeave={e => e.currentTarget.style.backgroundColor = '#10b981'} // Original green
+                        aria-label="View plan"
                       >
                         View
                       </Link>
