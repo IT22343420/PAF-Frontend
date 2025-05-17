@@ -13,12 +13,34 @@ const Login = () => {
     setLoading(true);
     try {
       const response = await axios.post('http://localhost:5000/api/auth/login', values);
+      
+      // Check if we got a valid token and user data
+      if (!response.data.token || !response.data.user) {
+        throw new Error('Invalid response from server');
+      }
+
+      // Store the token and user data
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
+      
+      // Set default authorization header for future requests
+      axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+      
       message.success('Login successful!');
       navigate('/profile');
     } catch (error) {
-      message.error(error.response?.data?.message || 'Login failed. Please check your credentials.');
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        message.error(error.response.data.message || 'Login failed. Please check your credentials.');
+      } else if (error.request) {
+        // The request was made but no response was received
+        message.error('No response from server. Please check if the backend is running.');
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        message.error('An error occurred. Please try again.');
+      }
+      console.error('Login error:', error);
     } finally {
       setLoading(false);
     }
@@ -62,20 +84,13 @@ const Login = () => {
           </Form.Item>
 
           <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={loading}
-              block
-              size="large"
-            >
-              Login
+            <Button type="primary" htmlType="submit" loading={loading} block>
+              Log in
             </Button>
           </Form.Item>
 
           <div className="auth-links">
             <Link to="/register">Don't have an account? Register</Link>
-            <Link to="/forgot-password">Forgot Password?</Link>
           </div>
         </Form>
       </div>
