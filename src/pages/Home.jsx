@@ -106,7 +106,11 @@ const Home = () => {
             alignItems: 'center',
             marginBottom: '30px'
           }}>
-            <h1 className="text-2xl font-bold text-indigo-700 mb-4 flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-indigo-700 mb-4 flex items-center gap-2"
+            style={{ 
+              fontSize: '30px',
+              fontWeight: '700' // Bold plan name
+            }}>
               📋 Learning Plans
             </h1>
             <Link 
@@ -116,7 +120,7 @@ const Home = () => {
                 alignItems: 'center',
                 gap: '8px',
                 padding: '8px 16px',
-                backgroundColor: '#2563eb',
+                backgroundColor: '#4338ca', // Darker indigo
                 color: 'white',
                 textDecoration: 'none',
                 borderRadius: '4px',
@@ -172,7 +176,8 @@ const Home = () => {
                       <h2 style={{ 
                         color: '#1f2937',
                         fontSize: '20px',
-                        margin: 0
+                        margin: 0,
+                        fontWeight: '700' // Bold plan name
                       }}>
                         {plan.planName}
                       </h2>
@@ -209,10 +214,10 @@ const Home = () => {
                       paddingTop: '15px'
                     }}>
                       <h3 style={{ 
-                        color: '#1f2937',
+                        color: '#4338ca', // Indigo-700 darker
                         fontSize: '16px',
                         marginBottom: '10px',
-                        fontWeight: '500'
+                        fontWeight: '700'  // Increased weight for heading
                       }}>
                         Topics
                       </h3>
@@ -302,35 +307,50 @@ const Home = () => {
                         View
                       </Link>
                       <Link 
-                        to={`/edit/${plan.planId}`}
+                      to={`/edit/${plan.planId}`}
                         style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px',
-                          padding: '8px 16px',
+                          
                           backgroundColor: '#2563eb',
                           color: 'white',
+                          padding: '10px 18px',
+                          borderRadius: 6,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          fontWeight: 600,
+                          fontSize: 14,
+                          boxShadow: '0 2px 6px rgba(37, 99, 235, 0.4)',
+                          transition: 'background-color 0.3s',
                           textDecoration: 'none',
-                          borderRadius: '4px',
-                          fontWeight: '500'
+                          userSelect: 'none',
                         }}
+                        onMouseEnter={e => e.currentTarget.style.backgroundColor = '#1d4ed8'}
+                        onMouseLeave={e => e.currentTarget.style.backgroundColor = '#2563eb'}
+                        aria-label="Edit plan"
                       >
                         <FaEdit /> Edit
                       </Link>
                       <button
                         onClick={() => handleDelete(plan.planId)}
                         style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px',
-                          padding: '8px 16px',
                           backgroundColor: '#dc2626',
                           color: 'white',
+                          padding: '10px 18px',
+                          borderRadius: 6,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 8,
                           border: 'none',
-                          borderRadius: '4px',
+                          fontWeight: 600,
+                          fontSize: 14,
+                          boxShadow: '0 2px 6px rgba(220, 38, 38, 0.4)',
                           cursor: 'pointer',
-                          fontWeight: '500'
+                          userSelect: 'none',
+                          transition: 'background-color 0.3s',
                         }}
+                        onMouseEnter={e => e.currentTarget.style.backgroundColor = '#b91c1c'}
+                        onMouseLeave={e => e.currentTarget.style.backgroundColor = '#dc2626'}
+                        aria-label="Delete plan"
                       >
                         <FaTrash /> Delete
                       </button>

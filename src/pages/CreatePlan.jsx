@@ -1,3 +1,5 @@
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaPlus, FaTrash, FaArrowLeft } from 'react-icons/fa';
@@ -17,7 +19,8 @@ const CreatePlan = () => {
       name: '',
       resourceLink: '',
       targetDate: '',
-      status: ''
+      status: 'Pending',
+
     }]
   });
   const [error, setError] = useState(null);
@@ -67,7 +70,6 @@ const CreatePlan = () => {
     });
   };
 
-  // Helper to convert date to ISO string
   const toISODate = (dateStr) => {
     if (dateStr && dateStr.includes('T')) return dateStr;
     return dateStr ? new Date(dateStr).toISOString() : null;
@@ -78,11 +80,10 @@ const CreatePlan = () => {
     setLoading(true);
     setError(null);
 
-    // Always generate a unique integer planId for new plans
     const now = new Date();
     const newPlan = {
       ...formData,
-      planId: Date.now(), // Use timestamp as unique integer
+      planId: Date.now(),
       completedate: toISODate(formData.completedate),
       targetdate: toISODate(formData.targetdate),
       createddate: toISODate(formData.createddate) || now.toISOString(),
@@ -100,8 +101,25 @@ const CreatePlan = () => {
     }
   };
 
+  // Common indigo shades
+  const headerColor = '#4f46e5'; // Indigo 700
+  const labelColor = '#4338ca';  // Indigo 600
+  const borderColor = '#4338ca'; // Indigo 600
+  const cancelBorderColor = '#4338ca'; // Indigo 300
+
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+      <Link to="/" style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            color: headerColor,
+            textDecoration: 'none',
+            marginBottom: '15px'
+          }}>
+            <FaArrowLeft style={{ marginRight: '8px' }} />
+            Back to Home
+          </Link>
       <div style={{ 
         background: 'white', 
         padding: '20px', 
@@ -109,17 +127,15 @@ const CreatePlan = () => {
         boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' 
       }}>
         <div style={{ marginBottom: '20px' }}>
-          <Link to="/" style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            color: '#2563eb',
-            textDecoration: 'none'
-          }}>
-            <FaArrowLeft style={{ marginRight: '8px' }} />
-            Back to Home
-          </Link>
-          <h1 style={{ marginTop: '10px', color: '#1f2937' }}>
-            Create New Learning Plan
+          
+          <h1 
+            className="text-2xl font-bold text-indigo-700 mb-4 flex items-center gap-2"
+            style={{ 
+              fontSize: '27px',
+              fontWeight: '700',
+            }}
+          >
+            New Learning Plan
           </h1>
         </div>
 
@@ -141,7 +157,7 @@ const CreatePlan = () => {
               display: 'block', 
               marginBottom: '5px', 
               fontWeight: '500',
-              color: '#374151'
+              color: labelColor
             }}>
               Title
             </label>
@@ -154,7 +170,7 @@ const CreatePlan = () => {
               style={{
                 width: '100%',
                 padding: '8px',
-                border: '1px solid #d1d5db',
+                border: `1px solid ${borderColor}`,
                 borderRadius: '4px'
               }}
             />
@@ -165,7 +181,7 @@ const CreatePlan = () => {
               display: 'block', 
               marginBottom: '5px', 
               fontWeight: '500',
-              color: '#374151'
+              color: labelColor
             }}>
               Description
             </label>
@@ -178,7 +194,7 @@ const CreatePlan = () => {
               style={{
                 width: '100%',
                 padding: '8px',
-                border: '1px solid #d1d5db',
+                border: `1px solid ${borderColor}`,
                 borderRadius: '4px'
               }}
             />
@@ -189,7 +205,7 @@ const CreatePlan = () => {
               display: 'block', 
               marginBottom: '5px', 
               fontWeight: '500',
-              color: '#374151'
+              color: labelColor
             }}>
               Complete Date
             </label>
@@ -202,20 +218,13 @@ const CreatePlan = () => {
               style={{
                 width: '100%',
                 padding: '8px',
-                border: '1px solid #d1d5db',
+                border: `1px solid ${borderColor}`,
                 borderRadius: '4px'
               }}
             />
           </div>
 
           <div style={{ marginBottom: '20px' }}>
-            <h2 style={{ 
-              color: '#1f2937',
-              fontSize: '18px',
-              marginBottom: '15px'
-            }}>
-              Topics
-            </h2>
             {formData.topics.map((topic, index) => (
               <div 
                 key={topic.id}
@@ -231,7 +240,11 @@ const CreatePlan = () => {
                   justifyContent: 'space-between',
                   marginBottom: '10px'
                 }}>
-                  <h3 style={{ color: '#1f2937' }}>Topic {index + 1}</h3>
+                  <h3 style={{ 
+                        fontSize: '20px',
+                        fontWeight: '700',
+                        color: headerColor,
+                      }}>Topic {index + 1}</h3>
                   <button
                     type="button"
                     onClick={() => removeTopic(index)}
@@ -251,7 +264,7 @@ const CreatePlan = () => {
                   <label style={{ 
                     display: 'block', 
                     marginBottom: '5px', 
-                    color: '#374151'
+                    color: labelColor
                   }}>
                     Name
                   </label>
@@ -263,7 +276,7 @@ const CreatePlan = () => {
                     style={{
                       width: '100%',
                       padding: '8px',
-                      border: '1px solid #d1d5db',
+                      border: `1px solid ${borderColor}`,
                       borderRadius: '4px'
                     }}
                   />
@@ -273,7 +286,7 @@ const CreatePlan = () => {
                   <label style={{ 
                     display: 'block', 
                     marginBottom: '5px', 
-                    color: '#374151'
+                    color: labelColor
                   }}>
                     Resource Link
                   </label>
@@ -284,7 +297,7 @@ const CreatePlan = () => {
                     style={{
                       width: '100%',
                       padding: '8px',
-                      border: '1px solid #d1d5db',
+                      border: `1px solid ${borderColor}`,
                       borderRadius: '4px'
                     }}
                   />
@@ -294,7 +307,7 @@ const CreatePlan = () => {
                   <label style={{ 
                     display: 'block', 
                     marginBottom: '5px', 
-                    color: '#374151'
+                    color: labelColor
                   }}>
                     Target Date
                   </label>
@@ -306,38 +319,42 @@ const CreatePlan = () => {
                     style={{
                       width: '100%',
                       padding: '8px',
-                      border: '1px solid #d1d5db',
+                      border: `1px solid ${borderColor}`,
                       borderRadius: '4px'
                     }}
                   />
                 </div>
 
-                <div>
-                  <label style={{ 
-                    display: 'block', 
-                    marginBottom: '5px', 
-                    color: '#374151'
-                  }}>
-                    Status
-                  </label>
-                  <select
-                    value={topic.status}
-                    onChange={(e) => handleTopicChange(index, 'status', e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '8px',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '4px'
-                    }}
-                  >
-                    <option value="Pending">Pending</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Completed">Completed</option>
-                  </select>
-                </div>
+                <div style={{ marginBottom: '15px' }}>
+  <label style={{ 
+    display: 'block', 
+    marginBottom: '5px', 
+    fontWeight: '500',
+    color: labelColor
+  }}>
+    Plan Status
+  </label>
+  <select
+    name="status"
+    value={formData.status}
+    onChange={handleInputChange}
+    required
+    style={{
+      width: '100%',
+      padding: '8px',
+      border: `1px solid ${borderColor}`,
+      borderRadius: '4px'
+    }}
+  >
+    <option value="">Select Status</option>
+    <option value="Pending">Pending</option>
+    <option value="In Progress">In Progress</option>
+    <option value="Completed">Completed</option>
+  </select>
+</div>
+
               </div>
             ))}
-
             <button
               type="button"
               onClick={addTopic}
@@ -346,58 +363,63 @@ const CreatePlan = () => {
                 alignItems: 'center',
                 gap: '8px',
                 padding: '8px 16px',
-                backgroundColor: '#2563eb',
+                backgroundColor: '#4338ca', // Darker indigo
                 color: 'white',
-                border: 'none',
+                textDecoration: 'none',
                 borderRadius: '4px',
-                cursor: 'pointer',
                 fontWeight: '500'
               }}
             >
-              <FaPlus /> Add Topic
+              <FaPlus style={{ marginRight: '6px' }} />
+              Add Topic
             </button>
           </div>
 
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'flex-end', 
-            gap: '10px', 
-            marginTop: '20px' 
-          }}>
-            <button
-              type="button"
-              onClick={() => navigate('/')}
-              style={{
-                padding: '8px 16px',
-                border: '1px solid #d1d5db',
-                borderRadius: '4px',
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '20px' }}>
+            <Link 
+              to="/" 
+              style={{ 
+                padding: '8px 20px',    // Smaller padding here too
+                borderRadius: '6px',
+                border: `2px solid ${cancelBorderColor}`,
+                color: cancelBorderColor,
+                fontWeight: '600',
+                fontSize: '16px',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 cursor: 'pointer',
-                backgroundColor: 'white'
+                backgroundColor: 'white',
+                minWidth: '120px',      // Optional for consistent width
               }}
             >
               Cancel
-            </button>
-            <button 
+            </Link>
+            <button
               type="submit"
               disabled={loading}
               style={{
-                padding: '8px 16px',
-                backgroundColor: '#2563eb',
+                backgroundColor: headerColor,
                 color: 'white',
+                padding: '8px 20px',     // Smaller padding here
+                borderRadius: '6px',
                 border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontWeight: '500',
-                opacity: loading ? 0.7 : 1
+                fontWeight: '700',
+                fontSize: '16px',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                minWidth: '120px',       // Optional: keep a minimum width
               }}
             >
               {loading ? 'Creating...' : 'Create Plan'}
             </button>
+            
           </div>
+
         </form>
       </div>
     </div>
   );
 };
 
-export default CreatePlan; 
+export default CreatePlan;
