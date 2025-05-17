@@ -1,11 +1,8 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Form, Input, Button, Select, message } from 'antd';
-import { UserOutlined, LockOutlined, MailOutlined, HomeOutlined } from '@ant-design/icons';
-import './Auth.css';
-import axios from 'axios';
-
-const { Option } = Select;
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { Button, Form, Input, message } from "antd";
+import "../App.css";
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
@@ -14,132 +11,45 @@ const Register = () => {
   const onFinish = async (values) => {
     setLoading(true);
     try {
-      // Remove confirmPassword before sending to backend
-      const { confirmPassword, ...registerData } = values;
-      const response = await axios.post('http://localhost:5000/api/auth/register', registerData);
-      message.success('Registration successful! Please login.');
-      navigate('/login'); // Redirect to login page after registration
+      const response = await axios.post("http://localhost:8080/api/users/register", values);
+      message.success("Registration successful!");
+
+      // Save user data to localStorage after registration (optional)
+      localStorage.setItem("user", JSON.stringify(response.data));
+
+      navigate("/profile");
     } catch (error) {
-      message.error(error.response?.data?.message || 'Registration failed. Please try again.');
+      message.error(error.response?.data?.message || "Registration failed.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-box">
-        <h2>Create Account</h2>
-        <Form
-          name="register"
-          onFinish={onFinish}
-          autoComplete="off"
-          layout="vertical"
-        >
-          <Form.Item
-            name="name"
-            rules={[{ required: true, message: 'Please input your name!' }]}
-          >
-            <Input
-              prefix={<UserOutlined />}
-              placeholder="Full Name"
-              size="large"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="email"
-            rules={[
-              { required: true, message: 'Please input your email!' },
-              { type: 'email', message: 'Please enter a valid email!' }
-            ]}
-          >
-            <Input
-              prefix={<MailOutlined />}
-              placeholder="Email"
-              size="large"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="password"
-            rules={[
-              { required: true, message: 'Please input your password!' },
-              { min: 6, message: 'Password must be at least 6 characters!' }
-            ]}
-          >
-            <Input.Password
-              prefix={<LockOutlined />}
-              placeholder="Password"
-              size="large"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="confirmPassword"
-            dependencies={['password']}
-            rules={[
-              { required: true, message: 'Please confirm your password!' },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  if (!value || getFieldValue('password') === value) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(new Error('Passwords do not match!'));
-                },
-              }),
-            ]}
-          >
-            <Input.Password
-              prefix={<LockOutlined />}
-              placeholder="Confirm Password"
-              size="large"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="role"
-            rules={[{ required: true, message: 'Please select your role!' }]}
-          >
-            <Select
-              placeholder="Select Role"
-              size="large"
-            >
-              <Option value="user">User</Option>
-              <Option value="admin">Admin</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            name="city"
-            rules={[{ required: true, message: 'Please input your city!' }]}
-          >
-            <Input
-              prefix={<HomeOutlined />}
-              placeholder="City"
-              size="large"
-            />
-          </Form.Item>
-
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={loading}
-              block
-              size="large"
-            >
-              Register
-            </Button>
-          </Form.Item>
-
-          <div className="auth-links">
-            <Link to="/login">Already have an account? Login</Link>
-          </div>
-        </Form>
-      </div>
+    <div className="register-container">
+      <h1 className="text-3xl mb-8 font-semibold text-center">Register</h1>
+      <Form layout="vertical" onFinish={onFinish}>
+        <Form.Item label="Name" name="name" rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
+        <Form.Item label="Email" name="email" rules={[{ required: true }]}>
+          <Input type="email" />
+        </Form.Item>
+        <Form.Item label="Password" name="password" rules={[{ required: true }]}>
+          <Input.Password />
+        </Form.Item>
+        <Form.Item label="Role" name="role" rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
+        <Form.Item label="City" name="city" rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
+        <Button type="primary" htmlType="submit" loading={loading} className="w-full">
+          Register
+        </Button>
+      </Form>
     </div>
   );
 };
 
-export default Register; 
+export default Register;

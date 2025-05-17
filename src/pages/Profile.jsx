@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Button, Form, Input, Select, Space, message, Avatar } from 'antd';
-import { EditOutlined, DeleteOutlined, LogoutOutlined, UserOutlined, MailOutlined, HomeOutlined, BookOutlined, BarChartOutlined, TrophyOutlined } from '@ant-design/icons';
+import { Card, Button, Form, Input, Select, Space, Modal, message } from 'antd';
+import { EditOutlined, DeleteOutlined, LogoutOutlined, UserOutlined, MailOutlined, HomeOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import './Profile.css';
 
@@ -17,15 +17,18 @@ const Profile = () => {
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem('token');
-      if (!token) {
+      const userStr = localStorage.getItem('user');
+      if (!token || !userStr) {
         navigate('/login');
         return;
       }
       try {
-        const res = await axios.get('http://localhost:5000/api/auth/me', {
+        const userObj = JSON.parse(userStr);
+        const userId = userObj._id || userObj.id;
+        const res = await axios.get(`http://localhost:5000/api/users/${userId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setUserData(res.data.user || res.data);
+        setUserData(res.data.user);
         setLoading(false);
       } catch (err) {
         navigate('/login');
@@ -42,37 +45,48 @@ const Profile = () => {
   const handleSave = async (values) => {
     try {
       const token = localStorage.getItem('token');
+      // Use id or _id, whichever exists
       const userId = userData._id || userData.id;
       const res = await axios.put(`http://localhost:5000/api/users/${userId}`, values, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
       setUserData(res.data.user);
       message.success('Profile updated successfully!');
       setIsEditing(false);
     } catch (error) {
-      message.error('Failed to update profile. Please try again.');
+      message.error(
+        error.response?.data?.message || 'Failed to update profile. Please try again.'
+      );
     }
   };
 
-  const handleDelete = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const userId = userData._id || userData.id;
-      await axios.delete(`http://localhost:5000/api/users/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      message.success('Profile deleted successfully!');
-      navigate('/login');
-    } catch (error) {
-      message.error('Failed to delete profile. Please try again.');
-    }
+  const handleDelete = () => {
+    Modal.confirm({
+      title: 'Delete Profile',
+      content: 'Are you sure you want to delete your profile? This action cannot be undone.',
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk: async () => {
+        try {
+          const token = localStorage.getItem('token');
+          // Use id or _id, whichever exists
+          const userId = userData._id || userData.id;
+          await axios.delete(`http://localhost:5000/api/users/${userId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          message.success('Profile deleted successfully!');
+          navigate('/login');
+        } catch (error) {
+          message.error('Failed to delete profile. Please try again.');
+        }
+      },
+    });
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
     localStorage.removeItem('user');
     navigate('/login');
   };
