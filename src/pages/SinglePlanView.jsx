@@ -10,12 +10,24 @@ const SinglePlanView = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Helper function to get status based on topics
+  const getPlanStatusFromTopics = (topics) => {
+    if (!topics || topics.length === 0) return 'No Topics';
+    const completedCount = topics.filter(t => t.status === 'Completed').length;
+    const pendingCount = topics.filter(t => t.status === 'Pending').length;
+    const inProgressCount = topics.filter(t => t.status === 'In Progress').length;
+    if (completedCount === topics.length) return 'Completed';
+    if (inProgressCount != 0) return 'In Progress';
+    if (completedCount != 0 && pendingCount != 0) return 'Pending';
+    return 'Pending';
+  };
+
   useEffect(() => {
     const fetchPlan = async () => {
       try {
         const data = await api.getPlan(id);
-        console.log('Fetched plan:', data); // <--- Check this in your browser console
         setPlan(data);
+        setError(null);
       } catch (err) {
         setError('Failed to fetch plan.');
         console.error('Fetch error:', err);
@@ -41,11 +53,15 @@ const SinglePlanView = () => {
   if (error) return <div style={{ color: '#dc2626' }}>{error}</div>;
   if (!plan) return <div>Plan not found</div>;
 
+  // Calculate progress
   const progress = plan.topics && plan.topics.length > 0
     ? Math.round(
         (plan.topics.filter(topic => topic.status === 'Completed').length / plan.topics.length) * 100
       )
     : 0;
+
+  // Use dynamic plan status
+  const planStatus = getPlanStatusFromTopics(plan.topics);
 
   return (
     <div style={{ backgroundColor: '#f9fafb', minHeight: '100vh', padding: '2rem' }}>
@@ -102,10 +118,12 @@ const SinglePlanView = () => {
                   borderRadius: '16px',
                   fontSize: '13px',
                   fontWeight: 500,
-                  backgroundColor: plan.status === 'Completed' ? '#dcfce7' : '#fef3c7',
-                  color: plan.status === 'Completed' ? '#166534' : '#92400e'
+                  backgroundColor: planStatus === 'Completed' ? '#dcfce7' : 
+                                          planStatus === 'In Progress' ? '#dbeafe' : '#fef3c7',
+                        color: planStatus === 'Completed' ? '#166534' : 
+                               planStatus === 'In Progress' ? '#1e40af' : '#92400e',
                 }}>
-                  {plan.status}
+                  {planStatus}
                 </span>
               </div>
             </div>
@@ -202,8 +220,10 @@ const SinglePlanView = () => {
                     borderRadius: '16px',
                     fontSize: '13px',
                     fontWeight: 500,
-                    backgroundColor: topic.status === 'Completed' ? '#dcfce7' : '#fef3c7',
-                    color: topic.status === 'Completed' ? '#166534' : '#92400e'
+                    backgroundColor: topic.status === 'Completed' ? '#dcfce7' : 
+                                                  topic.status === 'In Progress' ? '#dbeafe' : '#fef3c7',
+                                color: topic.status === 'Completed' ? '#166534' : 
+                                      topic.status === 'In Progress' ? '#1e40af' : '#92400e'
                   }}>
                     {topic.status}
                   </span>
@@ -233,4 +253,4 @@ const SinglePlanView = () => {
   );
 };
 
-export default SinglePlanView; 
+export default SinglePlanView;

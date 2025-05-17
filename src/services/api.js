@@ -13,14 +13,18 @@ const convertToBackendFormat = (plan) => {
     planName: plan.planName,
     plandesc: plan.plandesc,
     completedate: plan.completedate,
-    topic: plan.topics?.[0]?.name || '', 
-    resourceLink: plan.topics?.[0]?.resourceLink || '', 
-    status: plan.status || '',
-    targetdate: plan.topics?.[0]?.targetDate || plan.targetdate,
+    topics: plan.topics.map(topic => ({
+      name: topic.name,
+      resourceLink: topic.resourceLink,
+      targetDate: topic.targetDate,
+      status: topic.status
+    })),
     createddate: plan.createddate,
     updateddate: plan.updateddate || new Date().toISOString() 
   };
 };
+
+
 
 // Helper function to convert from backend to frontend format
 const convertToFrontendFormat = (plan) => {
@@ -33,15 +37,16 @@ const convertToFrontendFormat = (plan) => {
     status: plan.status,
     createddate: plan.createddate,
     updateddate: plan.updateddate,
-    topics: [{
-      id: 1,
-      name: plan.topic || '',
-      resourceLink: plan.resourceLink || '',
-      targetDate: plan.targetdate ? plan.targetdate.slice(0, 10) : '',
-      status: plan.status,
-    }]
+    topics: (plan.topics || []).map((topic, index) => ({
+      id: index + 1,
+      name: topic.name || '',
+      resourceLink: topic.resourceLink || '',
+      targetDate: topic.targetDate ? topic.targetDate.slice(0, 10) : '',
+      status: topic.status || '',
+    }))
   };
 };
+
 
 
 // API functions

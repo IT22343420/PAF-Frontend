@@ -7,6 +7,18 @@ import SideNav from './SideNav';
 // Helper to display date as YYYY-MM-DD
 const displayDate = (dateStr) => dateStr ? dateStr.slice(0, 10) : '';
 
+// Function to get plan status from topics
+const getPlanStatusFromTopics = (topics) => {
+    if (!topics || topics.length === 0) return 'No Topics';
+    const completedCount = topics.filter(t => t.status === 'Completed').length;
+    const pendingCount = topics.filter(t => t.status === 'Pending').length;
+    const inProgressCount = topics.filter(t => t.status === 'In Progress').length;
+    if (completedCount === topics.length) return 'Completed';
+    if (inProgressCount != 0) return 'In Progress';
+    if (completedCount != 0 && pendingCount != 0) return 'Pending';
+    return 'Pending';
+  };
+
 const Home = () => {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -83,252 +95,255 @@ const Home = () => {
   }
 
   return (
-    
     <div className="flex bg-[#f5f6fa] min-h-screen">
-      <SideNav/>
-    <div className="flex-1 p-6 overflow-y-auto">
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
-      
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        marginBottom: '30px'
-      }}>
-        <h1 className="text-2xl font-bold text-indigo-700 mb-4 flex items-center gap-2">
-        📋 Learning Plans
-      </h1>
-        <Link 
-          to="/create"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '8px 16px',
-            backgroundColor: '#2563eb',
-            color: 'white',
-            textDecoration: 'none',
-            borderRadius: '4px',
-            fontWeight: '500'
-          }}
-        >
-          <FaPlus /> Create New Plan
-        </Link>
-      </div>
+      <SideNav />
+      <div className="flex-1 p-6 overflow-y-auto">
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
 
-      {plans.length === 0 ? (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '40px',
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-        }}>
-          <p style={{ color: '#6b7280' }}>
-            No plans found. Create your first learning plan!
-          </p>
-        </div>
-      ) : (
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-          gap: '20px'
-        }}>
-          {plans.map((plan) => (
-            <div 
-              key={plan.planId}
-              style={{ 
-                backgroundColor: 'white',
-                padding: '20px',
-                borderRadius: '8px',
-                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                transition: 'transform 0.2s, box-shadow 0.2s',
-                ':hover': {
-                  transform: 'translateY(-2px)',
-                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)'
-                }
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            marginBottom: '30px'
+          }}>
+            <h1 className="text-2xl font-bold text-indigo-700 mb-4 flex items-center gap-2">
+              📋 Learning Plans
+            </h1>
+            <Link 
+              to="/create"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '8px 16px',
+                backgroundColor: '#2563eb',
+                color: 'white',
+                textDecoration: 'none',
+                borderRadius: '4px',
+                fontWeight: '500'
               }}
             >
-              <div style={{ 
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'flex-start',
-                marginBottom: '15px'
-              }}>
-                <h2 style={{ 
-                  color: '#1f2937',
-                  fontSize: '20px',
-                  margin: 0
-                }}>
-                  {plan.planName}
-                </h2>
-                <span style={{ 
-                  padding: '4px 8px',
-                  borderRadius: '4px',
-                  backgroundColor: plan.status === 'Completed' ? '#dcfce7' : 
-                                        plan.status === 'In Progress' ? '#dbeafe' : '#fef3c7',
-                          color: plan.status === 'Completed' ? '#166534' : 
-                                plan.status === 'In Progress' ? '#1e40af' : '#92400e',
-                  fontSize: '14px',
-                  fontWeight: '500'
-                }}>
-                  {plan.status}
-                </span>
-              </div>
+              <FaPlus /> Create New Plan
+            </Link>
+          </div>
 
-              <p style={{ 
-                color: '#4b5563',
-                marginBottom: '15px',
-                minHeight: '60px'
-              }}>
-                {plan.plandesc}
+          {plans.length === 0 ? (
+            <div style={{ 
+              textAlign: 'center', 
+              padding: '40px',
+              backgroundColor: 'white',
+              borderRadius: '8px',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+            }}>
+              <p style={{ color: '#6b7280' }}>
+                No plans found. Create your first learning plan!
               </p>
+            </div>
+          ) : (
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+              gap: '20px'
+            }}>
+              {plans.map((plan) => {
+                const planStatus = getPlanStatusFromTopics(plan.topics);
 
-              {/* Display Complete Date */}
-              <div style={{ color: '#6b7280', fontSize: '13px', marginBottom: '10px' }}>
-                Complete Date: {displayDate(plan.completedate)}
-              </div>
-
-              <div style={{ 
-                marginBottom: '20px',
-                borderTop: '1px solid #e5e7eb',
-                paddingTop: '15px'
-              }}>
-                <h3 style={{ 
-                  color: '#1f2937',
-                  fontSize: '16px',
-                  marginBottom: '10px',
-                  fontWeight: '500'
-                }}>
-                  Topics
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {plan.topics.map((topic) => (
-                    <div 
-                      key={topic.id}
-                      style={{ 
-                        padding: '10px',
-                        backgroundColor: '#f9fafb',
+                return (
+                  <div 
+                    key={plan.planId}
+                    style={{ 
+                      backgroundColor: 'white',
+                      padding: '20px',
+                      borderRadius: '8px',
+                      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                      transition: 'transform 0.2s, box-shadow 0.2s',
+                      ':hover': {
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)'
+                      }
+                    }}
+                  >
+                    <div style={{ 
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                      marginBottom: '15px'
+                    }}>
+                      <h2 style={{ 
+                        color: '#1f2937',
+                        fontSize: '20px',
+                        margin: 0
+                      }}>
+                        {plan.planName}
+                      </h2>
+                      <span style={{ 
+                        padding: '4px 8px',
                         borderRadius: '4px',
-                        border: '1px solid #e5e7eb'
-                      }}
-                    >
-                      <div style={{ 
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginBottom: '5px'
+                        backgroundColor: planStatus === 'Completed' ? '#dcfce7' : 
+                                          planStatus === 'In Progress' ? '#dbeafe' : '#fef3c7',
+                        color: planStatus === 'Completed' ? '#166534' : 
+                               planStatus === 'In Progress' ? '#1e40af' : '#92400e',
+                        fontSize: '14px',
+                        fontWeight: '500'
                       }}>
-                        <span style={{ 
-                          color: '#1f2937',
-                          fontWeight: '500'
-                        }}>
-                          {topic.name}
-                        </span>
-                        <span style={{ 
-                          padding: '2px 6px',
-                          borderRadius: '4px',
-                          fontSize: '12px',
-                          backgroundColor: topic.status === 'Completed' ? '#dcfce7' : 
-                                        topic.status === 'In Progress' ? '#dbeafe' : '#fef3c7',
-                          color: topic.status === 'Completed' ? '#166534' : 
-                                topic.status === 'In Progress' ? '#1e40af' : '#92400e'
-                        }}>
-                          {topic.status}
-                        </span>
-                      </div>
-                      <div style={{ 
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        fontSize: '12px',
-                        color: '#6b7280'
+                        {planStatus}
+                      </span>
+                    </div>
+
+                    <p style={{ 
+                      color: '#4b5563',
+                      marginBottom: '15px',
+                      minHeight: '60px'
+                    }}>
+                      {plan.plandesc}
+                    </p>
+
+                    {/* Display Complete Date */}
+                    <div style={{ color: '#6b7280', fontSize: '13px', marginBottom: '10px' }}>
+                      Complete Date: {displayDate(plan.completedate)}
+                    </div>
+
+                    <div style={{ 
+                      marginBottom: '20px',
+                      borderTop: '1px solid #e5e7eb',
+                      paddingTop: '15px'
+                    }}>
+                      <h3 style={{ 
+                        color: '#1f2937',
+                        fontSize: '16px',
+                        marginBottom: '10px',
+                        fontWeight: '500'
                       }}>
-                        <span>Target: {displayDate(topic.targetDate)}</span>
-                        {topic.resourceLink && (
-                          <a 
-                            href={topic.resourceLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                              color: '#2563eb',
-                              textDecoration: 'none',
-                              ':hover': {
-                                textDecoration: 'underline'
-                              }
+                        Topics
+                      </h3>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {plan.topics.map((topic) => (
+                          <div 
+                            key={topic.id}
+                            style={{ 
+                              padding: '10px',
+                              backgroundColor: '#f9fafb',
+                              borderRadius: '4px',
+                              border: '1px solid #e5e7eb'
                             }}
                           >
-                            Resources
-                          </a>
-                        )}
+                            <div style={{ 
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              marginBottom: '5px'
+                            }}>
+                              <span style={{ 
+                                color: '#1f2937',
+                                fontWeight: '500'
+                              }}>
+                                {topic.name}
+                              </span>
+                              <span style={{ 
+                                padding: '2px 6px',
+                                borderRadius: '4px',
+                                fontSize: '12px',
+                                backgroundColor: topic.status === 'Completed' ? '#dcfce7' : 
+                                                  topic.status === 'In Progress' ? '#dbeafe' : '#fef3c7',
+                                color: topic.status === 'Completed' ? '#166534' : 
+                                      topic.status === 'In Progress' ? '#1e40af' : '#92400e'
+                              }}>
+                                {topic.status}
+                              </span>
+                            </div>
+                            <div style={{ 
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              fontSize: '12px',
+                              color: '#6b7280'
+                            }}>
+                              <span>Target: {displayDate(topic.targetDate)}</span>
+                              {topic.resourceLink && (
+                                <a 
+                                  href={topic.resourceLink}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  style={{
+                                    color: '#2563eb',
+                                    textDecoration: 'none',
+                                    ':hover': {
+                                      textDecoration: 'underline'
+                                    }
+                                  }}
+                                >
+                                  Resources
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
 
-              <div style={{ 
-                display: 'flex',
-                gap: '10px',
-                justifyContent: 'flex-end'
-              }}>
-                <Link 
-                  to={`/view/${plan.planId}`}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '8px 16px',
-                    backgroundColor: '#10b981',
-                    color: 'white',
-                    textDecoration: 'none',
-                    borderRadius: '4px',
-                    fontWeight: '500'
-                  }}
-                >
-                  View
-                </Link>
-                <Link 
-                  to={`/edit/${plan.planId}`}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '8px 16px',
-                    backgroundColor: '#2563eb',
-                    color: 'white',
-                    textDecoration: 'none',
-                    borderRadius: '4px',
-                    fontWeight: '500'
-                  }}
-                >
-                  <FaEdit /> Edit
-                </Link>
-                <button
-                  onClick={() => handleDelete(plan.planId)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '8px 16px',
-                    backgroundColor: '#dc2626',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    fontWeight: '500'
-                  }}
-                >
-                  <FaTrash /> Delete
-                </button>
-              </div>
+                    <div style={{ 
+                      display: 'flex',
+                      gap: '10px',
+                      justifyContent: 'flex-end'
+                    }}>
+                      <Link 
+                        to={`/view/${plan.planId}`}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          padding: '8px 16px',
+                          backgroundColor: '#10b981',
+                          color: 'white',
+                          textDecoration: 'none',
+                          borderRadius: '4px',
+                          fontWeight: '500'
+                        }}
+                      >
+                        View
+                      </Link>
+                      <Link 
+                        to={`/edit/${plan.planId}`}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          padding: '8px 16px',
+                          backgroundColor: '#2563eb',
+                          color: 'white',
+                          textDecoration: 'none',
+                          borderRadius: '4px',
+                          fontWeight: '500'
+                        }}
+                      >
+                        <FaEdit /> Edit
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(plan.planId)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          padding: '8px 16px',
+                          backgroundColor: '#dc2626',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontWeight: '500'
+                        }}
+                      >
+                        <FaTrash /> Delete
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          ))}
+          )}
         </div>
-      )}
-    </div>
-    </div>
+      </div>
     </div>
   );
 };
 
-export default Home; 
+export default Home;
