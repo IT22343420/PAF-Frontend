@@ -22,40 +22,67 @@ const SkillBadges = () => {
     fetchClaimedBadges();
   }, []);
 
+  const mainColor = 'rgba(55,48,163,1)';
+
   return (
     <div className="flex bg-[#f5f6fa] min-h-screen">
       <SideNav />
       <div className="flex-1 p-6 overflow-y-auto">
         <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow">
-          <h1 className="text-2xl font-bold text-indigo-700 mb-6">
+          <h1
+            style={{
+              fontSize: '30px',
+              fontWeight: 700,
+              marginBottom: '1rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              color: mainColor,
+            }}
+          >
             🏅 My Skill Badges
           </h1>
 
           <Link
             to="/badges"
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition mb-4 inline-block"
+            className="mb-4 inline-block px-5 py-2 rounded text-white transition"
+            style={{ backgroundColor: mainColor }}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(45,39,140,1)')}
+            onMouseLeave={e => (e.currentTarget.style.backgroundColor = mainColor)}
           >
             Claim New Badges
           </Link>
 
           {error && (
-            <p className="text-red-500 mb-4">{error}</p>
+            <p className="mb-4 text-red-500">{error}</p>
           )}
 
           {claimedBadges.length === 0 ? (
-            <p className="text-gray-500 text-center py-10">
+            <p
+              className="text-center py-10 text-gray-500 text-sm"
+            >
               No badges earned yet. Keep learning to earn your first badge!
             </p>
           ) : (
-            <ul className="space-y-6">
+            <ul className="space-y-4">
               {claimedBadges.map((badge, index) => (
                 <li
                   key={index}
-                  className="border-l-4 border-indigo-500 bg-indigo-50 px-4 py-3 rounded shadow-sm"
+                  className="border-l-4 px-3 py-2 rounded shadow-sm"
+                  style={{ borderColor: mainColor, backgroundColor: 'rgba(55,48,163,0.1)' }}
                 >
-                  <h3 className="text-lg font-semibold text-indigo-800">{badge.name}</h3>
-                  <p className="text-gray-700">{badge.description}</p>
-                  <p className="text-green-600 font-medium mt-1">🎉 Congratulations!</p>
+                  <h3
+                    className="font-semibold"
+                    style={{ color: 'rgba(55,48,163,0.9)', fontSize: '0.875rem' /* smaller */ }}
+                  >
+                    {badge.name}
+                  </h3>
+                  <p className="text-gray-700 text-xs">{badge.description}</p>
+                  <p
+                    className="font-medium mt-1 text-green-600 text-xs"
+                  >
+                    🎉 Congratulations!
+                  </p>
                 </li>
               ))}
             </ul>

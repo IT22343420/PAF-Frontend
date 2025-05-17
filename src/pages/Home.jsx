@@ -106,9 +106,20 @@ const Home = () => {
             alignItems: 'center',
             marginBottom: '30px'
           }}>
-            <h1 className="text-2xl font-bold text-indigo-700 mb-4 flex items-center gap-2">
+            <h1
+              style={{
+                fontSize: '30px', 
+                fontWeight: '700',
+                marginBottom: '1rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                color: 'rgba(55, 48, 163, 1)'
+              }}
+            >
               📋 Learning Plans
             </h1>
+
             <Link 
               to="/create"
               style={{
@@ -208,12 +219,14 @@ const Home = () => {
                       borderTop: '1px solid #e5e7eb',
                       paddingTop: '15px'
                     }}>
-                      <h3 style={{ 
-                        color: '#1f2937',
-                        fontSize: '16px',
-                        marginBottom: '10px',
-                        fontWeight: '500'
-                      }}>
+                      <h3
+                        style={{
+                          color: 'rgba(55,48,163,1)', // updated color here
+                          fontSize: '14px',
+                          marginBottom: '10px',
+                          fontWeight: '700',
+                        }}
+                      >
                         Topics
                       </h3>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
