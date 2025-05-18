@@ -1,15 +1,34 @@
 // src/pages/ClaimBadges.jsx
 import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import SideNav from './SideNav';
 import { FaArrowLeft } from 'react-icons/fa';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Confetti from 'react-confetti';
 
 const ClaimBadges = () => {
+  const navigate = useNavigate();
   const [badges, setBadges] = useState([]);
   const [error, setError] = useState(null);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const fetchBadges = async () => {
     try {
@@ -28,9 +47,15 @@ const ClaimBadges = () => {
   const handleClaim = async (badgeId) => {
     try {
       await api.claimBadge(badgeId);
-      toast.success('Badge claimed successfully!');
-      // Refresh badges after claiming
-      fetchBadges();
+      setShowConfetti(true);
+      toast.success('Badge claimed successfully! 🎉');
+      
+      // Hide confetti after 2 seconds and navigate
+      setTimeout(() => {
+        setShowConfetti(false);
+        navigate('/skillbadges', { state: { showConfetti: true } });
+      }, 2000);
+
     } catch (error) {
       console.error('Error claiming badge:', error);
       toast.error('Failed to claim badge. Please try again.');
@@ -43,6 +68,16 @@ const ClaimBadges = () => {
       <div className="flex-1 p-6 overflow-y-auto">
         <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
         
+        {showConfetti && (
+          <Confetti
+            width={windowSize.width}
+            height={windowSize.height}
+            recycle={false}
+            numberOfPieces={200}
+            gravity={0.3}
+          />
+        )}
+
         <Link 
           to="/skillbadges" 
           style={{ 
@@ -81,12 +116,10 @@ const ClaimBadges = () => {
               </div>
             ))}
           </div>
-
         </div>
       </div>
     </div>
   );
-
 };
 
 export default ClaimBadges;
