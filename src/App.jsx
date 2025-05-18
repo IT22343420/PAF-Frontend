@@ -7,6 +7,7 @@ import SinglePlanView from './pages/SinglePlanView';
 import Navbar from './components/Navbar';
 import SkillBadges from './pages/SkillBadges';
 import ClaimBadges from './pages/ClaimBadges';
+import Profile from './components/profile/Profile';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/view/:id" element={<SinglePlanView />} />
           <Route path="/skillbadges" element={<SkillBadges />} />
           <Route path="/badges" element={<ClaimBadges/>} />
+          <Route path="/profile/*" element={<Profile />} />
         </Routes>
       </div>
     </div>

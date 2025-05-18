@@ -1,6 +1,6 @@
 // src/components/SideNav.jsx
-import { FaClipboardList, FaChartLine, FaCog, FaUserCircle } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom'; // ← Add this
+import { FaClipboardList, FaChartLine, FaCog, FaUserCircle, FaHome, FaPlus, FaMedal } from 'react-icons/fa';
+import { useNavigate, Link } from 'react-router-dom'; // ← Add this
 
 const SideNav = () => {
   const navigate = useNavigate(); // ← Initialize the navigate function
@@ -9,7 +9,9 @@ const SideNav = () => {
     <div className="w-64 min-h-screen bg-[#f9f9f9] rounded-xl p-6 shadow-sm">
       {/* Profile Section */}
       <div className="flex flex-col items-center mb-6">
-        <FaUserCircle className="text-indigo-700 text-5xl mb-2" />
+        <Link to="/profile" className="mt-auto mb-4 text-gray-600 hover:text-indigo-600">
+          <FaUserCircle size={50} className="text-indigo-700" />
+        </Link>
         <h2 className="text-lg font-bold text-indigo-700">Lithara Bambarendage</h2>
         <p className="text-sm text-gray-500">litharabambarendage@gmail.com</p>
         <hr className="w-full mt-4 border-gray-300" />
@@ -18,7 +20,7 @@ const SideNav = () => {
       {/* Menu Items */}
       <nav className="flex flex-col gap-2">
         <NavItem icon={<FaClipboardList />} label="My Learning Plans" path="/" navigate={navigate} />
-        <NavItem icon={<FaChartLine />} label="My Learning Progress" path="/progress" navigate={navigate} />
+        <NavItem icon={<FaChartLine />} label="My Learning Progress" path="/profile/learning" navigate={navigate} />
         <NavItem icon={<FaCog />} label="My Badges" path="/skillbadges" navigate={navigate} />
       </nav>
     </div>

@@ -54,7 +54,7 @@ const ClaimBadges = () => {
       setTimeout(() => {
         setShowConfetti(false);
         navigate('/skillbadges', { state: { showConfetti: true } });
-      }, 2000);
+      }, 3000);
 
     } catch (error) {
       console.error('Error claiming badge:', error);
@@ -97,24 +97,34 @@ const ClaimBadges = () => {
           {error && <div className="text-red-500 mb-4">{error}</div>}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {badges.map((badge) => (
-              <div key={badge.id || badge._id} className="p-4 bg-white rounded shadow-md">
-                <h2 className="text-xl font-semibold text-indigo-700">{badge.name}</h2>
-                <p className="text-gray-600 mt-2">{badge.description}</p>
-                <div className="mt-4">
-                  {badge.claimed ? (
-                    <span className="bg-green-300 text-white px-4 py-2 rounded">Claimed</span>
-                  ) : (
-                    <button
-                      onClick={() => handleClaim(badge.id || badge._id)}
-                      className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
-                    >
-                      Claim
-                    </button>
-                  )}
+            {badges.map((badge) => {
+              const isSpecificBadgeDisabled = (badge.id || badge._id) === '68299217fb2f3448cd34e82e';
+              const isClaimed = badge.claimed;
+
+              return (
+                <div 
+                  key={badge.id || badge._id} 
+                  className={`p-4 bg-white rounded shadow-md ${isSpecificBadgeDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  <h2 className="text-xl font-semibold text-indigo-700">{badge.name}</h2>
+                  <p className="text-gray-600 mt-2">{badge.description}</p>
+                  <div className="mt-4">
+                    {isSpecificBadgeDisabled ? (
+                      <span className="bg-gray-400 text-white px-4 py-2 rounded">Not Available</span>
+                    ) : isClaimed ? (
+                      <span className="bg-green-300 text-white px-4 py-2 rounded">Claimed</span>
+                    ) : (
+                      <button
+                        onClick={() => handleClaim(badge.id || badge._id)}
+                        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+                      >
+                        Claim
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
