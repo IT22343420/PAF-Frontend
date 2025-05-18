@@ -175,9 +175,10 @@ const CreatePlan = () => {
 
     try {
       await api.createPlan(newPlan);
+      toast.success('Plan created successfully!');
       setTimeout(() => {
-        navigate('/?create=true');
-      }, 500);
+        navigate('/');
+      }, 2500);
     } catch (err) {
       setError('Failed to create plan. Please try again later.');
       toast.error('Failed to create plan. Please try again later.');

@@ -197,14 +197,21 @@ const EditPlan = () => {
       updateddate: now.toISOString(),
     };
 
+    if (Object.keys(validationErrors).length > 0) {
+      setError(''); // Clear API error if there are validation errors
+      return;
+    }
+
     try {
       await api.updatePlan(updatedPlan);
+      toast.success('Plan updated successfully!');
       setTimeout(() => {
-        navigate('/?update=true');
-      }, 500);
+        navigate('/');
+      }, 2500);
     } catch (err) {
-      setError('Failed to update plan. Please try again later.');
-      console.error(err);
+      console.error('Error updating plan:', err);
+      setError('Failed to update plan. Please try again.');
+      toast.error('Failed to update plan. Please try again.');
     } finally {
       setLoading(false);
     }

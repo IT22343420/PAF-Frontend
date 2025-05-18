@@ -37,15 +37,6 @@ const Home = () => {
     fetchPlans();
   }, []);
 
-  const params = new URLSearchParams(location.search);
-  if (params.get('create') === 'true') {
-    toast.success('Plan created successfully!');
-  } else if (params.get('update') === 'true') {
-    toast.success('Plan updated successfully!');
-  } else if (params.get('delete') === 'true') {
-    toast.success('Plan deleted successfully!');
-  }
-
   const fetchPlans = async () => {
     try {
       setLoading(true);
