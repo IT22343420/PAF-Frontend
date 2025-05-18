@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { api } from '../services/api';
 import { FaArrowLeft, FaTrash } from 'react-icons/fa';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Helpers for date formatting
 const displayDate = (dateStr) => (dateStr ? dateStr.slice(0, 10) : '');
@@ -59,9 +61,24 @@ const EditPlan = () => {
     fetchPlan();
   }, [id]);
 
+  // URL validation function
+  const isValidUrl = (urlString) => {
+    try {
+      const url = new URL(urlString);
+      return url.protocol === 'http:' || url.protocol === 'https:';
+    } catch (e) {
+      return false;
+    }
+  };
+
+  // Get today's date in YYYY-MM-DD format for min attribute
+  const today = new Date().toISOString().split('T')[0];
+
   // Validation logic
   const validate = () => {
     const errors = {};
+    const todayDate = new Date();
+    todayDate.setHours(0, 0, 0, 0); // Reset time to start of day
 
     if (!formData.planName || formData.planName.trim() === '') {
       errors.planName = 'Title is required.';
@@ -71,6 +88,12 @@ const EditPlan = () => {
     }
     if (!formData.completedate) {
       errors.completedate = 'Complete Date is required.';
+    } else {
+      const completeDate = new Date(formData.completedate);
+      completeDate.setHours(0, 0, 0, 0);
+      if (completeDate < todayDate) {
+        errors.completedate = 'Complete Date cannot be before today.';
+      }
     }
 
     // Validate topics array
@@ -84,6 +107,15 @@ const EditPlan = () => {
         }
         if (!topic.targetDate) {
           tErr.targetDate = 'Target Date is required.';
+        } else {
+          const targetDate = new Date(topic.targetDate);
+          targetDate.setHours(0, 0, 0, 0);
+          if (targetDate < todayDate) {
+            tErr.targetDate = 'Target Date cannot be before today.';
+          }
+        }
+        if (topic.resourceLink && !isValidUrl(topic.resourceLink)) {
+          tErr.resourceLink = 'Please enter a valid URL (e.g., https://example.com)';
         }
         return tErr;
       });
@@ -167,7 +199,9 @@ const EditPlan = () => {
 
     try {
       await api.updatePlan(updatedPlan);
-      navigate('/');
+      setTimeout(() => {
+        navigate('/?update=true');
+      }, 500);
     } catch (err) {
       setError('Failed to update plan. Please try again later.');
       console.error(err);
@@ -190,6 +224,7 @@ const EditPlan = () => {
         backgroundColor: '#f9fafb',
       }}
     >
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
       <Link
         to="/"
         style={{
@@ -324,6 +359,7 @@ const EditPlan = () => {
               name="completedate"
               value={formData.completedate || ''}
               onChange={handleInputChange}
+              min={today}
               className="input-field"
               style={{
                 width: '220px',
@@ -430,11 +466,23 @@ const EditPlan = () => {
                       padding: '7px 10px',
                       fontSize: '14px',
                       borderRadius: '7px',
-                      border: `1.5px solid ${labelColor}`,
+                      border:
+                        validationErrors.topicErrors &&
+                        validationErrors.topicErrors[index] &&
+                        validationErrors.topicErrors[index].resourceLink
+                          ? `2px solid ${errorColor}`
+                          : `1.5px solid ${labelColor}`,
                       outline: 'none',
                       transition: 'border-color 0.3s',
                     }}
                   />
+                  {validationErrors.topicErrors &&
+                    validationErrors.topicErrors[index] &&
+                    validationErrors.topicErrors[index].resourceLink && (
+                      <p style={{ color: errorColor, fontSize: '13px', marginTop: '4px' }}>
+                        {validationErrors.topicErrors[index].resourceLink}
+                      </p>
+                    )}
                 </div>
 
                 {/* Target Date */}
@@ -450,6 +498,7 @@ const EditPlan = () => {
                     type="date"
                     value={topic.targetDate ? topic.targetDate.slice(0, 10) : ''}
                     onChange={(e) => handleTopicChange(index, 'targetDate', e.target.value)}
+                    min={today}
                     style={{
                       width: '100%',
                       padding: '7px 10px',

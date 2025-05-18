@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
 import { api } from '../services/api';
 import SideNav from './SideNav';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useLocation } from 'react-router-dom';
 
 // Helper to display date as YYYY-MM-DD
 const displayDate = (dateStr) => dateStr ? dateStr.slice(0, 10) : '';
@@ -23,11 +26,22 @@ const Home = () => {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   // Fetch all plans on component mount
   useEffect(() => {
     fetchPlans();
   }, []);
+
+  const params = new URLSearchParams(location.search);
+  if (params.get('create') === 'true') {
+    toast.success('Plan created successfully!');
+  } else if (params.get('update') === 'true') {
+    toast.success('Plan updated successfully!');
+  } else if (params.get('delete') === 'true') {
+    toast.success('Plan deleted successfully!');
+  }
 
   const fetchPlans = async () => {
     try {
@@ -49,6 +63,9 @@ const Home = () => {
         await api.deletePlan(planId);
         // Refresh the plans list
         fetchPlans();
+        setTimeout(() => {
+          navigate('/?delete=true');
+        }, 500);
       } catch (err) {
         setError('Failed to delete plan. Please try again later.');
         console.error(err);
@@ -98,6 +115,7 @@ const Home = () => {
     <div className="flex bg-[#f5f6fa] min-h-screen">
       <SideNav />
       <div className="flex-1 p-6 overflow-y-auto">
+        <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
 
           <div style={{ 

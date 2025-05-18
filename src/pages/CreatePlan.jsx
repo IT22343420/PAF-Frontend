@@ -24,7 +24,7 @@ const CreatePlan = () => {
   };
 
   const [formData, setFormData] = useState(initialFormData);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState({});
   const [loading, setLoading] = useState(false);
 
   // Convert date to ISO string for backend
@@ -33,6 +33,9 @@ const CreatePlan = () => {
     if (dateStr.includes('T')) return dateStr;
     return new Date(dateStr).toISOString();
   };
+
+  // Get today's date in YYYY-MM-DD format for min attribute
+  const today = new Date().toISOString().split('T')[0];
 
   // Input handlers
   const handleInputChange = (e) => {
@@ -90,45 +93,69 @@ const CreatePlan = () => {
   // Clear all form inputs
   const clearAll = () => {
     setFormData(initialFormData);
-    setError(null);
+    setError({});
   };
 
   // Validate form before submit
   const validateForm = () => {
-    if (!formData.planName.trim()) {
-      toast.error('Title is required.');
-      return false;
-    }
-    if (!formData.plandesc.trim()) {
-      toast.error('Description is required.');
-      return false;
-    }
+    const errors = {};
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to start of day
+
+    if (!formData.planName.trim()) errors.planName = 'Title is required.';
+    if (!formData.plandesc.trim()) errors.plandesc = 'Description is required.';
+    
+    // Validate complete date
     if (!formData.completedate) {
-      toast.error('Complete Date is required.');
-      return false;
+      errors.completedate = 'Complete Date is required.';
+    } else {
+      const completeDate = new Date(formData.completedate);
+      completeDate.setHours(0, 0, 0, 0);
+      if (completeDate < today) {
+        errors.completedate = 'Complete Date cannot be before today.';
+      }
     }
-    if (!formData.status) {
-      toast.error('Plan Status is required.');
-      return false;
-    }
+
+    // Validate topics
     for (let i = 0; i < formData.topics.length; i++) {
       const topic = formData.topics[i];
-      if (!topic.name.trim()) {
-        toast.error(`Topic ${i + 1}: Name is required.`);
-        return false;
-      }
+      if (!topic.name.trim()) errors[`topic-${i}-name`] = `Topic ${i + 1}: Name is required.`;
+      
+      // Validate target date
       if (!topic.targetDate) {
-        toast.error(`Topic ${i + 1}: Target Date is required.`);
-        return false;
+        errors[`topic-${i}-targetDate`] = `Topic ${i + 1}: Target Date is required.`;
+      } else {
+        const targetDate = new Date(topic.targetDate);
+        targetDate.setHours(0, 0, 0, 0);
+        if (targetDate < today) {
+          errors[`topic-${i}-targetDate`] = `Topic ${i + 1}: Target Date cannot be before today.`;
+        }
+      }
+
+      // Validate resource link if provided
+      if (topic.resourceLink && !isValidUrl(topic.resourceLink)) {
+        errors[`topic-${i}-resourceLink`] = `Topic ${i + 1}: Please enter a valid URL (e.g., https://example.com)`;
       }
     }
-    return true;
+    
+    setError(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  // URL validation function
+  const isValidUrl = (urlString) => {
+    try {
+      const url = new URL(urlString);
+      return url.protocol === 'http:' || url.protocol === 'https:';
+    } catch (e) {
+      return false;
+    }
   };
 
   // Submit handler
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
+    setError({});
 
     if (!validateForm()) {
       return;
@@ -148,8 +175,9 @@ const CreatePlan = () => {
 
     try {
       await api.createPlan(newPlan);
-      toast.success('Plan created successfully!');
-      navigate('/');
+      setTimeout(() => {
+        navigate('/?create=true');
+      }, 500);
     } catch (err) {
       setError('Failed to create plan. Please try again later.');
       toast.error('Failed to create plan. Please try again later.');
@@ -160,373 +188,464 @@ const CreatePlan = () => {
   };
 
   // Colors (same as before)
-  const headerColor = '#4f46e5'; // Indigo 700
-  const labelColor = '#4338ca';  // Indigo 600
-  const borderColor = '#4338ca'; // Indigo 600
-  const cancelBorderColor = '#4338ca'; // Indigo 300
+  const headerColor = '#4c51bf'; // Indigo shade
+  const labelColor = '#5a67d8'; // Lighter indigo
+  const errorColor = '#dc2626'; // Red for errors
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
+    <div
+      style={{
+        maxWidth: '800px',
+        margin: '40px auto',
+        padding: '20px',
+        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        backgroundColor: '#f9fafb',
+      }}
+    >
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
-      <Link to="/" style={{
-        display: 'flex',
-        alignItems: 'center',
-        color: headerColor,
-        textDecoration: 'none',
-        marginBottom: '15px'
-      }}>
-        <FaArrowLeft style={{ marginRight: '8px' }} />
+      <Link
+        to="/"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          color: headerColor,
+          textDecoration: 'none',
+          marginBottom: '25px',
+          fontWeight: '600',
+          fontSize: '16px',
+          gap: '6px',
+        }}
+      >
+        <FaArrowLeft />
         Back to Home
       </Link>
-      <div style={{
-        background: 'white',
-        padding: '20px',
-        borderRadius: '8px',
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-      }}>
+      <div
+        style={{
+          background: 'white',
+          padding: '30px 25px',
+          borderRadius: '12px',
+          boxShadow: '0 8px 20px rgba(0, 0, 0, 0.1)',
+          border: `1px solid ${labelColor}30`,
+        }}
+      >
         <h1
-          className="text-2xl font-bold text-indigo-700 mb-4 flex items-center gap-2"
           style={{
-            fontSize: '27px',
+            fontSize: '30px',
             fontWeight: '700',
+            color: headerColor,
+            marginBottom: '25px',
+            userSelect: 'none',
           }}
         >
           New Learning Plan
         </h1>
 
-        {error && (
-          <div style={{
-            padding: '10px',
-            backgroundColor: '#fee2e2',
-            color: '#dc2626',
-            borderRadius: '4px',
-            marginBottom: '20px'
-          }}>
-            {error}
-          </div>
-        )}
-
         <form onSubmit={handleSubmit} noValidate>
           {/* Title */}
-          <div style={{ marginBottom: '15px' }}>
-            <label htmlFor="planName" style={{
-              display: 'block',
-              marginBottom: '5px',
-              fontWeight: '500',
-              color: labelColor
-            }}>
-              Title
+          <div style={{ marginBottom: '22px' }}>
+            <label
+              htmlFor="planName"
+              style={{
+                display: 'block',
+                marginBottom: '7px',
+                fontWeight: '600',
+                color: labelColor,
+                userSelect: 'none',
+              }}
+            >
+              Title <span style={{ color: errorColor }}>*</span>
             </label>
             <input
-              id="planName"
               type="text"
+              id="planName"
               name="planName"
               value={formData.planName}
               onChange={handleInputChange}
-              required
-              aria-required="true"
-              aria-invalid={formData.planName.trim() === '' ? "true" : "false"}
               style={{
                 width: '100%',
-                padding: '8px',
-                border: `1px solid ${borderColor}`,
-                borderRadius: '4px'
+                padding: '10px 14px',
+                fontSize: '16px',
+                borderRadius: '8px',
+                border: `1.5px solid ${labelColor}`,
+                outline: 'none',
+                transition: 'border-color 0.3s',
               }}
+              placeholder="Enter plan title"
+              aria-required="true"
+              aria-invalid={formData.planName.trim() === '' ? 'true' : 'false'}
               disabled={loading}
             />
+            {error.planName && (
+              <p style={{ color: errorColor, marginTop: '6px', fontSize: '14px' }}>{error.planName}</p>
+            )}
           </div>
 
           {/* Description */}
-          <div style={{ marginBottom: '15px' }}>
-            <label htmlFor="plandesc" style={{
-              display: 'block',
-              marginBottom: '5px',
-              fontWeight: '500',
-              color: labelColor
-            }}>
-              Description
+          <div style={{ marginBottom: '22px' }}>
+            <label
+              htmlFor="plandesc"
+              style={{
+                display: 'block',
+                marginBottom: '7px',
+                fontWeight: '600',
+                color: labelColor,
+                userSelect: 'none',
+              }}
+            >
+              Description <span style={{ color: errorColor }}>*</span>
             </label>
             <textarea
               id="plandesc"
               name="plandesc"
               value={formData.plandesc}
               onChange={handleInputChange}
-              required
-              aria-required="true"
-              aria-invalid={formData.plandesc.trim() === '' ? "true" : "false"}
               rows="4"
               style={{
                 width: '100%',
-                padding: '8px',
-                border: `1px solid ${borderColor}`,
-                borderRadius: '4px'
+                padding: '10px 14px',
+                fontSize: '16px',
+                borderRadius: '8px',
+                border: `1.5px solid ${labelColor}`,
+                outline: 'none',
+                resize: 'vertical',
+                transition: 'border-color 0.3s',
               }}
+              placeholder="Enter plan description"
+              aria-required="true"
+              aria-invalid={formData.plandesc.trim() === '' ? 'true' : 'false'}
               disabled={loading}
             />
+            {error.plandesc && (
+              <p style={{ color: errorColor, marginTop: '6px', fontSize: '14px' }}>{error.plandesc}</p>
+            )}
           </div>
 
           {/* Complete Date */}
-          <div style={{ marginBottom: '15px' }}>
-            <label htmlFor="completedate" style={{
-              display: 'block',
-              marginBottom: '5px',
-              fontWeight: '500',
-              color: labelColor
-            }}>
-              Complete Date
+          <div style={{ marginBottom: '22px' }}>
+            <label
+              htmlFor="completedate"
+              style={{
+                display: 'block',
+                marginBottom: '7px',
+                fontWeight: '600',
+                color: labelColor,
+                userSelect: 'none',
+              }}
+            >
+              Complete Date <span style={{ color: errorColor }}>*</span>
             </label>
             <input
-              id="completedate"
               type="date"
+              id="completedate"
               name="completedate"
-              value={formData.completedate}
+              value={formData.completedate || ''}
               onChange={handleInputChange}
-              required
-              aria-required="true"
-              aria-invalid={!formData.completedate ? "true" : "false"}
+              min={today}
               style={{
-                width: '100%',
-                padding: '8px',
-                border: `1px solid ${borderColor}`,
-                borderRadius: '4px'
+                width: '220px',
+                padding: '8px 12px',
+                fontSize: '16px',
+                borderRadius: '8px',
+                border: `1.5px solid ${labelColor}`,
+                outline: 'none',
+                transition: 'border-color 0.3s',
               }}
+              aria-required="true"
+              aria-invalid={formData.completedate === '' ? 'true' : 'false'}
               disabled={loading}
             />
+            {error.completedate && (
+              <p style={{ color: errorColor, marginTop: '6px', fontSize: '14px' }}>{error.completedate}</p>
+            )}
           </div>
 
-          {/* Topics */}
-          <div style={{ marginBottom: '20px' }}>
+          {/* Topics Section */}
+          <div style={{ marginBottom: '22px' }}>
+            <h3 style={{ marginBottom: '15px', fontWeight: '700', color: headerColor, userSelect: 'none', fontSize: '20px' }}>
+              Topics <span style={{ color: errorColor }}>*</span>
+            </h3>
             {formData.topics.map((topic, index) => (
               <div
                 key={topic.id}
                 style={{
                   marginBottom: '15px',
                   padding: '15px',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '4px'
+                  borderRadius: '10px',
+                  background: '#f9fafb',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                  border: `1px solid ${labelColor}88`,
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: '14px',
+                  alignItems: 'center',
                 }}
               >
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  marginBottom: '10px'
-                }}>
-                  <h3 style={{
-                    fontSize: '20px',
-                    fontWeight: '700',
-                    color: headerColor,
-                  }}>Topic {index + 1}</h3>
-                  <button
-                    type="button"
-                    onClick={() => removeTopic(index)}
-                    aria-label={`Remove Topic ${index + 1}`}
-                    disabled={loading}
-                    style={{
-                      color: '#dc2626',
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      padding: '4px 8px'
-                    }}
-                  >
-                    <FaTrash />
-                  </button>
-                </div>
-
                 {/* Topic Name */}
-                <div style={{ marginBottom: '10px' }}>
-                  <label htmlFor={`topic-name-${topic.id}`} style={{
-                    display: 'block',
-                    marginBottom: '5px',
-                    color: labelColor
-                  }}>
-                    Name
+                <div style={{ flex: '1 1 200px', minWidth: '200px' }}>
+                  <label
+                    htmlFor={`topic-name-${topic.id}`}
+                    style={{ display: 'block', fontWeight: '600', color: labelColor, marginBottom: '5px' }}
+                  >
+                    Topic Name <span style={{ color: errorColor }}>*</span>
                   </label>
                   <input
                     id={`topic-name-${topic.id}`}
                     type="text"
                     value={topic.name}
                     onChange={(e) => handleTopicChange(index, 'name', e.target.value)}
-                    required
-                    aria-required="true"
-                    aria-invalid={topic.name.trim() === '' ? "true" : "false"}
+                    placeholder="Topic name"
                     style={{
                       width: '100%',
-                      padding: '8px',
-                      border: `1px solid ${borderColor}`,
-                      borderRadius: '4px'
+                      padding: '7px 10px',
+                      fontSize: '14px',
+                      borderRadius: '7px',
+                      border: `1.5px solid ${labelColor}`,
+                      outline: 'none',
+                      transition: 'border-color 0.3s',
                     }}
+                    aria-required="true"
+                    aria-invalid={topic.name.trim() === '' ? 'true' : 'false'}
                     disabled={loading}
                   />
+                  {error[`topic-${index}-name`] && (
+                    <p style={{ color: errorColor, fontSize: '13px', marginTop: '4px' }}>
+                      {error[`topic-${index}-name`]}
+                    </p>
+                  )}
                 </div>
 
                 {/* Resource Link */}
-                <div style={{ marginBottom: '10px' }}>
-                  <label htmlFor={`topic-resource-${topic.id}`} style={{
-                    display: 'block',
-                    marginBottom: '5px',
-                    color: labelColor
-                  }}>
+                <div style={{ flex: '1 1 250px', minWidth: '250px' }}>
+                  <label
+                    htmlFor={`topic-link-${topic.id}`}
+                    style={{ display: 'block', fontWeight: '600', color: labelColor, marginBottom: '5px' }}
+                  >
                     Resource Link
                   </label>
                   <input
-                    id={`topic-resource-${topic.id}`}
+                    id={`topic-link-${topic.id}`}
                     type="url"
                     value={topic.resourceLink}
                     onChange={(e) => handleTopicChange(index, 'resourceLink', e.target.value)}
+                    placeholder="https://example.com"
                     style={{
                       width: '100%',
-                      padding: '8px',
-                      border: `1px solid ${borderColor}`,
-                      borderRadius: '4px'
+                      padding: '7px 10px',
+                      fontSize: '14px',
+                      borderRadius: '7px',
+                      border: `1.5px solid ${labelColor}`,
+                      outline: 'none',
+                      transition: 'border-color 0.3s',
                     }}
                     disabled={loading}
                   />
+                  {error[`topic-${index}-resourceLink`] && (
+                    <p style={{ color: errorColor, fontSize: '13px', marginTop: '4px' }}>
+                      {error[`topic-${index}-resourceLink`]}
+                    </p>
+                  )}
                 </div>
 
-                {/* Topic Target Date */}
-                <div style={{ marginBottom: '10px' }}>
-                  <label htmlFor={`topic-target-${topic.id}`} style={{
-                    display: 'block',
-                    marginBottom: '5px',
-                    color: labelColor
-                  }}>
-                    Target Date
+                {/* Target Date */}
+                <div style={{ flex: '1 1 180px', minWidth: '180px' }}>
+                  <label
+                    htmlFor={`topic-targetDate-${topic.id}`}
+                    style={{ display: 'block', fontWeight: '600', color: labelColor, marginBottom: '5px' }}
+                  >
+                    Target Date <span style={{ color: errorColor }}>*</span>
                   </label>
                   <input
-                    id={`topic-target-${topic.id}`}
+                    id={`topic-targetDate-${topic.id}`}
                     type="date"
                     value={topic.targetDate}
                     onChange={(e) => handleTopicChange(index, 'targetDate', e.target.value)}
-                    required
-                    aria-required="true"
-                    aria-invalid={!topic.targetDate ? "true" : "false"}
+                    min={today}
                     style={{
                       width: '100%',
-                      padding: '8px',
-                      border: `1px solid ${borderColor}`,
-                      borderRadius: '4px'
+                      padding: '7px 10px',
+                      fontSize: '14px',
+                      borderRadius: '7px',
+                      border: `1.5px solid ${labelColor}`,
+                      outline: 'none',
+                      transition: 'border-color 0.3s',
                     }}
+                    aria-required="true"
+                    aria-invalid={topic.targetDate === '' ? 'true' : 'false'}
                     disabled={loading}
                   />
+                  {error[`topic-${index}-targetDate`] && (
+                    <p style={{ color: errorColor, fontSize: '13px', marginTop: '4px' }}>
+                      {error[`topic-${index}-targetDate`]}
+                    </p>
+                  )}
                 </div>
+
                 {/* Status */}
-          <div style={{ marginBottom: '20px' }}>
-            <label htmlFor="status" style={{
-              display: 'block',
-              marginBottom: '5px',
-              fontWeight: '500',
-              color: labelColor
-            }}>
-              Plan Status
-            </label>
-            <select
-              id="status"
-              name="status"
-              value={formData.status}
-              onChange={handleInputChange}
-              required
-              aria-required="true"
-              aria-invalid={!formData.status ? "true" : "false"}
-              style={{
-                width: '100%',
-                padding: '8px',
-                border: `1px solid ${borderColor}`,
-                borderRadius: '4px'
-              }}
-              disabled={loading}
-            >
-              <option value="" disabled>-- Select Status --</option>
-              <option value="Pending">Pending</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Completed">Completed</option>
-            </select>
-          </div>
+                <div style={{ flex: '1 1 140px', minWidth: '140px' }}>
+                  <label
+                    htmlFor={`topic-status-${topic.id}`}
+                    style={{ display: 'block', fontWeight: '600', color: labelColor, marginBottom: '5px' }}
+                  >
+                    Status
+                  </label>
+                  <select
+                    id={`topic-status-${topic.id}`}
+                    value={topic.status}
+                    onChange={(e) => handleTopicChange(index, 'status', e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '7px 10px',
+                      fontSize: '14px',
+                      borderRadius: '7px',
+                      border: `1.5px solid ${labelColor}`,
+                      outline: 'none',
+                      transition: 'border-color 0.3s',
+                      cursor: 'pointer',
+                      backgroundColor: 'white',
+                    }}
+                    disabled={loading}
+                  >
+                    <option value="Pending">Pending</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                  </select>
+                </div>
+
+                {/* Remove Topic Button */}
+                <button
+                  type="button"
+                  onClick={() => removeTopic(index)}
+                  title="Remove Topic"
+                  style={{
+                    marginLeft: '10px',
+                    backgroundColor: '#e53e3e',
+                    border: 'none',
+                    color: 'white',
+                    borderRadius: '50%',
+                    width: '30px',
+                    height: '30px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                  aria-label={`Remove topic ${topic.name || index + 1}`}
+                  disabled={loading}
+                >
+                  <FaTrash />
+                </button>
               </div>
             ))}
+
+            {/* Add Topic Button */}
             <button
               type="button"
               onClick={addTopic}
-              disabled={loading}
               style={{
+                marginTop: '10px',
+                padding: '10px 15px',
                 backgroundColor: headerColor,
                 color: 'white',
-                padding: '8px 16px',
-                borderRadius: '4px',
-                fontWeight: '700',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '5px',
+                fontWeight: '600',
+                borderRadius: '8px',
                 border: 'none',
+                cursor: 'pointer',
+                userSelect: 'none',
+                transition: 'background-color 0.3s',
               }}
+              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#434190')}
+              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = headerColor)}
+              disabled={loading}
             >
-              <FaPlus /> Add Topic
+              + Add Topic
             </button>
           </div>
 
-          
-
-          {/* Buttons */}
+          {/* Submit, Clear All, and Cancel Buttons */}
           <div
-            className="flex gap-3"
             style={{
               display: 'flex',
               gap: '12px',
-              marginTop: '15px',
-              justifyContent: 'flex-start'
+              marginTop: '20px',
+              flexWrap: 'wrap',
+              justifyContent: 'flex-start',
             }}
           >
             <button
               type="submit"
               disabled={loading}
               style={{
-                borderRadius: '6px',
+                padding: '13px 20px',
+                fontSize: '18px',
+                fontWeight: '700',
                 backgroundColor: headerColor,
-                borderColor: headerColor,
                 color: 'white',
-                fontWeight: '600',
-                cursor: 'pointer',
-                padding: '8px 16px',
-                border: '1.5px solid',
+                borderRadius: '10px',
+                border: 'none',
+                minWidth: '150px',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                userSelect: 'none',
+                transition: 'background-color 0.3s',
               }}
+              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = loading ? headerColor : '#434190')}
+              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = headerColor)}
             >
-              {loading ? 'Saving...' : 'Save Plan'}
+              {loading ? 'Creating...' : 'Create Plan'}
             </button>
-
             <button
               type="button"
               onClick={clearAll}
               disabled={loading}
               style={{
-                borderRadius: '6px',
+                padding: '13px 20px',
+                fontSize: '18px',
+                fontWeight: '700',
                 backgroundColor: '#fff',
-                borderColor: cancelBorderColor,
-                color: cancelBorderColor,
-                fontWeight: '600',
-                cursor: 'pointer',
-                padding: '8px 16px',
-                border: '1.5px solid',
+                color: headerColor,
+                borderRadius: '10px',
+                border: `2px solid ${headerColor}`,
+                minWidth: '150px',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                userSelect: 'none',
+                transition: 'background-color 0.3s, color 0.3s',
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = '#f1f5f9';
+                e.currentTarget.style.color = '#3730a3';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = '#fff';
+                e.currentTarget.style.color = headerColor;
               }}
             >
               Clear All
             </button>
-
             <Link
               to="/"
               style={{
-                borderRadius: '6px',
+                padding: '13px 20px',
+                fontSize: '18px',
+                fontWeight: '700',
                 backgroundColor: '#fff',
-                borderColor: cancelBorderColor,
-                color: cancelBorderColor,
-                fontWeight: '600',
-                cursor: 'pointer',
-                padding: '8px 16px',
-                border: '1.5px solid',
+                color: headerColor,
+                borderRadius: '10px',
+                border: `2px solid ${headerColor}`,
+                minWidth: '150px',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                userSelect: 'none',
+                textDecoration: 'none',
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                textDecoration: 'none',
+                transition: 'background-color 0.3s, color 0.3s',
+              }}
+              onMouseOver={e => {
+                e.currentTarget.style.backgroundColor = '#f1f5f9';
+                e.currentTarget.style.color = '#3730a3';
+              }}
+              onMouseOut={e => {
+                e.currentTarget.style.backgroundColor = '#fff';
+                e.currentTarget.style.color = headerColor;
               }}
             >
               Cancel
