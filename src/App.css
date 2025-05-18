@@ -9,8 +9,15 @@
   min-height: calc(100vh - 64px - 70px); /* Subtract header and footer height */
 }
 
+.content-no-margin-top {
+  padding: 24px;
+  background: #fff;
+  min-height: calc(100vh - 70px); /* Subtract only footer height */
+}
+
 @media (max-width: 768px) {
-  .content {
+  .content,
+  .content-no-margin-top {
     padding: 16px;
   }
 }

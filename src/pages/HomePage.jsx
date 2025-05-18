@@ -84,10 +84,14 @@ const HomePage = () => {
       {/* Stats Section */}
       <section className="stats-section">
         <div className="stats-row">
-          <div className="stat-box stat-learners">
+          <div 
+            className="stat-box stat-learners"
+            onClick={() => navigate('/registered-users')}
+            style={{ cursor: 'pointer' }}
+          >
             <span className="stat-icon"><UserOutlined /></span>
             <span className="stat-title">Active Learners</span>
-            <span className="stat-value">10,000</span>
+            <span className="stat-value">4</span>
           </div>
           <div className="stat-box stat-courses">
             <span className="stat-icon"><BookOutlined /></span>
