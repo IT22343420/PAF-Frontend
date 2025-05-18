@@ -196,8 +196,8 @@ const CreatePlan = () => {
     <div
       style={{
         maxWidth: '800px',
-        margin: '40px auto',
-        padding: '20px',
+        margin: '0px auto',
+        padding: '10px',
         fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
         backgroundColor: '#f9fafb',
       }}

@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
-import { FaEdit, FaTrash, FaLink, FaArrowLeft } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaLink, FaArrowLeft, FaSave } from 'react-icons/fa';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const SinglePlanView = () => {
   const { id } = useParams();
@@ -9,6 +11,7 @@ const SinglePlanView = () => {
   const [plan, setPlan] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [saving, setSaving] = useState(false);
 
   // Helper function to get status based on topics
   const getPlanStatusFromTopics = (topics) => {
@@ -43,9 +46,38 @@ const SinglePlanView = () => {
       try {
         await api.deletePlan(plan.planId);
         navigate('/');
+        toast.success('Plan deleted successfully!');
       } catch (err) {
         setError('Failed to delete plan.');
+        toast.error('Failed to delete plan.');
+        console.error('Delete error:', err);
       }
+    }
+  };
+
+  // Handle status change for a topic
+  const handleTopicStatusChange = (index, newStatus) => {
+    const updatedTopics = [...plan.topics];
+    updatedTopics[index] = { ...updatedTopics[index], status: newStatus };
+    setPlan({ ...plan, topics: updatedTopics });
+  };
+
+  // Handle saving the updated plan
+  const handleSavePlan = async () => {
+    setSaving(true);
+    setError(null);
+    try {
+      const planToSave = {
+        ...plan,
+      };
+      await api.updatePlan(planToSave);
+      toast.success('Plan saved successfully!');
+    } catch (err) {
+      setError('Failed to save plan. Please try again.');
+      toast.error('Failed to save plan. Please try again.');
+      console.error('Save error:', err);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -53,14 +85,16 @@ const SinglePlanView = () => {
   if (error) return <div style={{ textAlign: 'center', marginTop: '3rem', color: '#dc2626' }}>{error}</div>;
   if (!plan) return <div style={{ textAlign: 'center', marginTop: '3rem', color: '#6b7280' }}>Plan not found</div>;
 
-  const progress = plan.topics && plan.topics.length > 0
-    ? Math.round((plan.topics.filter(topic => topic.status === 'Completed').length / plan.topics.length) * 100)
+  const progress = plan?.topics && plan.topics.length > 0
+    ? Math.round((plan.topics.filter(topic => topic.status === 'Completed').length / plan.topics.length) * 100) +
+      Math.round((plan.topics.filter(topic => topic.status === 'In Progress').length / plan.topics.length) * 25)
     : 0;
 
   const planStatus = getPlanStatusFromTopics(plan.topics);
 
   return (
-    <div style={{ backgroundColor: '#f9fafb', minHeight: '100vh', padding: '2rem 1rem' }}>
+    <div style={{ backgroundColor: '#f9fafb', minHeight: '100vh', padding: '10px 1rem', margin: '0 auto' }}>
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
       <div style={{ maxWidth: 800, margin: '0 auto' }}>
         {/* Back Button */}
         <Link
@@ -140,6 +174,31 @@ const SinglePlanView = () => {
                 minWidth: 200,
               }}
             >
+              <button
+                onClick={handleSavePlan}
+                disabled={loading || saving}
+                style={{
+                    backgroundColor: saving ? '#9ca3af' : '#10b981',
+                    color: 'white',
+                    padding: '10px 18px',
+                    borderRadius: 6,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    fontWeight: 600,
+                    fontSize: 14,
+                    border: 'none',
+                    boxShadow: '0 2px 6px rgba(16, 185, 129, 0.4)',
+                    cursor: loading || saving ? 'not-allowed' : 'pointer',
+                    userSelect: 'none',
+                    transition: 'background-color 0.3s',
+                }}
+                onMouseEnter={e => { if (!loading && !saving) e.currentTarget.style.backgroundColor = '#059669'; }}
+                onMouseLeave={e => { if (!loading && !saving) e.currentTarget.style.backgroundColor = '#10b981'; }}
+                aria-label="Save plan changes"
+              >
+                {saving ? 'Saving...' : <><FaSave /> Save Plan</>}
+              </button>
               <Link
                 to={`/edit/${plan.planId}`}
                 style={{
@@ -162,7 +221,7 @@ const SinglePlanView = () => {
                 aria-label="Edit plan"
               >
                 <FaEdit />
-                Edit Plan
+                Edit All Details
               </Link>
               <button
                 type="button"
@@ -250,117 +309,90 @@ const SinglePlanView = () => {
             borderRadius: 8,
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
             padding: 24,
+            marginBottom: 24,
             border: '1px solid #e5e7eb',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 24
           }}
         >
-          <h2
-            id="topics-title"
-            style={{
-              fontSize: '20px',
-              fontWeight: '700',
-              color: '#4338ca',
-              marginBottom: '20px'
-            }}
-          >
-            Topics
-          </h2>
-
-          {plan.topics && plan.topics.length > 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {plan.topics.map((topic) => (
-                <article
-                  key={topic.id}
-                  style={{
-                    border: '1px solid #e5e7eb',
-                    borderRadius: 8,
-                    padding: 16,
-                    background: '#f9fafb',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-                    transition: 'border-color 0.2s',
-                  }}
-                  tabIndex={0}
-                  aria-label={`Topic: ${topic.name}, status: ${topic.status}`}
-                >
-                  <header
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: 8,
-                    }}
+          <h2 id="topics-title" className="text-2xl font-bold text-indigo-700 mb-4 flex items-center gap-2" style={{ fontSize: '23px', fontWeight: '600', marginBottom: 8 }}>Topics</h2>
+          <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
+            {plan.topics && plan.topics.map((topic, index) => (
+              <div key={topic._id || index}
+                style={{
+                  background: '#f0f4f8',
+                  borderRadius: 6,
+                  padding: 16,
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                  border: '1px solid #d1d5db',
+                  transition: 'border-color 0.3s, background-color 0.3s',
+                }}
+                onMouseOver={(e) => {e.currentTarget.style.borderColor = '#d1d5db'; e.currentTarget.style.backgroundColor = '#ffffff';}}
+                onMouseOut={(e) => {e.currentTarget.style.borderColor = '#d1d5db'; e.currentTarget.style.backgroundColor = '#f0f4f8';}}
+              >
+                {/* Topic Header (Name and Static Status) */}
+                <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                  <h3 style={{ fontSize: 18, fontWeight: 600, color: '#1f2937', margin: 0 }}>
+                    Topic {index + 1}: {topic.name}
+                  </h3>
+                   {/* Static Status Badge */}
+                  <span
+                      style={{
+                          padding: '4px 12px',
+                          borderRadius: 20,
+                          fontSize: 13,
+                          fontWeight: 600,
+                          backgroundColor:
+                              topic.status === 'Completed' ? '#dcfce7' :
+                              topic.status === 'In Progress' ? '#dbeafe' : '#fef3c7',
+                          color:
+                              topic.status === 'Completed' ? '#166534' :
+                              topic.status === 'In Progress' ? '#1e40af' : '#92400e',
+                          whiteSpace: 'nowrap',
+                          userSelect: 'none',
+                      }}
+                      aria-label={`Topic status: ${topic.status}`}
                   >
-                    <h3
-                      style={{
-                        fontSize: '1.1rem',
-                        fontWeight: 600,
-                        color: '#1f2937',
-                        margin: 0,
-                      }}
-                    >
-                      {topic.name}
-                    </h3>
-                    <span
-                      style={{
-                        padding: '4px 12px',
-                        borderRadius: 20,
-                        fontSize: 13,
-                        fontWeight: 600,
-                        backgroundColor:
-                          topic.status === 'Completed'
-                            ? '#dcfce7'
-                            : topic.status === 'In Progress'
-                            ? '#dbeafe'
-                            : '#fef3c7',
-                        color:
-                          topic.status === 'Completed'
-                            ? '#166534'
-                            : topic.status === 'In Progress'
-                            ? '#1e40af'
-                            : '#92400e',
-                        whiteSpace: 'nowrap',
-                        userSelect: 'none',
-                      }}
-                      aria-label={`Status: ${topic.status}`}
-                    >
                       {topic.status}
-                    </span>
-                  </header>
+                  </span>
+                </header>
 
-                  <div
+                <p style={{ fontSize: 14, color: '#4b5563', marginBottom: 4 }}>Target Date: {topic.targetDate ? topic.targetDate.slice(0, 10) : '-'}</p>
+
+                {/* Editable Status Dropdown and Progress Input */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, color: '#4b5563', marginBottom: 12 }}>
+                  Status:
+                  <select
+                    value={topic.status}
+                    onChange={(e) => handleTopicStatusChange(index, e.target.value)}
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      color: '#2563eb',
-                      marginBottom: 6,
-                      gap: 6,
+                      padding: '4px 8px',
+                      borderRadius: 4,
+                      border: '1px solid #d1d5db',
+                      backgroundColor: 'white',
+                      cursor: 'pointer',
+                      transition: 'border-color 0.3s, box-shadow 0.3s',
                     }}
+                     onFocus={(e) => {e.currentTarget.style.borderColor = '#a78bfa'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(167, 139, 250, 0.5)';}}
+                     onBlur={(e) => {e.currentTarget.style.borderColor = '#d1d5db'; e.currentTarget.style.boxShadow = 'none';}}
+                     onMouseOver={(e) => {e.currentTarget.style.borderColor = '#a78bfa';}}
+                     onMouseOut={(e) => {e.currentTarget.style.borderColor = '#d1d5db';}}
                   >
-                    <FaLink />
-                    <a
-                      href={topic.resourceLink || '#'}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        color: '#2563eb',
-                        textDecoration: 'none',
-                        fontWeight: 600,
-                        wordBreak: 'break-word',
-                      }}
-                      aria-label={`Resource link for ${topic.name}`}
-                    >
-                      Resource Link
-                    </a>
+                    <option value="Pending">Pending</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                  </select>
                   </div>
 
-                  <div style={{ fontSize: 13, color: '#6b7280' }}>
-                    Target Date: {topic.targetDate ? topic.targetDate.slice(0, 10) : 'N/A'}
-                  </div>
-                </article>
-              ))}
-            </div>
-          ) : (
-            <p style={{ color: '#6b7280', fontStyle: 'italic' }}>No topics available.</p>
-          )}
+                {topic.resourceLink && (
+                  <p style={{ fontSize: 14, color: '#4b5563' }}>
+                    Resource: <a href={topic.resourceLink} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', textDecoration: 'none' }}>{topic.resourceLink} <FaLink style={{ fontSize: 12 }}/></a>
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
         </section>
       </div>
     </div>
