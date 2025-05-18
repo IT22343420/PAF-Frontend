@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaPlus, FaThLarge, FaList } from 'react-icons/fa';
 import { api } from '../services/api';
 import SideNav from './SideNav';
 import { toast, ToastContainer } from 'react-toastify';
@@ -16,16 +16,19 @@ const getPlanStatusFromTopics = (topics) => {
     const completedCount = topics.filter(t => t.status === 'Completed').length;
     const pendingCount = topics.filter(t => t.status === 'Pending').length;
     const inProgressCount = topics.filter(t => t.status === 'In Progress').length;
+    
     if (completedCount === topics.length) return 'Completed';
-    if (inProgressCount != 0) return 'In Progress';
-    if (completedCount != 0 && pendingCount != 0) return 'Pending';
+    if (inProgressCount > 0) return 'In Progress';
+    if (pendingCount > 0) return 'Pending';
     return 'Pending';
-  };
+};
 
 const Home = () => {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [viewMode, setViewMode] = useState('card'); // 'card' or 'list'
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -72,6 +75,13 @@ const Home = () => {
       }
     }
   };
+
+  // Filter plans based on status
+  const filteredPlans = plans.filter(plan => {
+    if (statusFilter === 'All') return true;
+    const planStatus = getPlanStatusFromTopics(plan.topics);
+    return planStatus === statusFilter;
+  });
 
   if (loading) {
     return (
@@ -127,29 +137,106 @@ const Home = () => {
             <h1 className="text-2xl font-bold text-indigo-700 mb-4 flex items-center gap-2"
             style={{ 
               fontSize: '30px',
-              fontWeight: '700' // Bold plan name
+              fontWeight: '700'
             }}>
               📋 Learning Plans
             </h1>
-            <Link 
-              to="/create"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '8px 16px',
-                backgroundColor: '#4338ca', // Darker indigo
-                color: 'white',
-                textDecoration: 'none',
-                borderRadius: '4px',
-                fontWeight: '500'
-              }}
-            >
-              <FaPlus /> Create New Plan
-            </Link>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              {/* View Toggle Buttons */}
+              <div style={{ 
+                display: 'flex', 
+                gap: '4px',
+                backgroundColor: '#f3f4f6',
+                padding: '4px',
+                borderRadius: '6px'
+              }}>
+                <button
+                  onClick={() => setViewMode('card')}
+                  style={{
+                    padding: '8px',
+                    backgroundColor: viewMode === 'card' ? '#4338ca' : 'transparent',
+                    color: viewMode === 'card' ? 'white' : '#4b5563',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <FaThLarge />
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  style={{
+                    padding: '8px',
+                    backgroundColor: viewMode === 'list' ? '#4338ca' : 'transparent',
+                    color: viewMode === 'list' ? 'white' : '#4b5563',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <FaList />
+                </button>
+              </div>
+              <Link 
+                to="/create"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '8px 16px',
+                  backgroundColor: '#4338ca',
+                  color: 'white',
+                  textDecoration: 'none',
+                  borderRadius: '4px',
+                  fontWeight: '500'
+                }}
+              >
+                <FaPlus /> Create New Plan
+              </Link>
+            </div>
           </div>
 
-          {plans.length === 0 ? (
+          {/* Status Filter Buttons */}
+          <div style={{ 
+            display: 'flex', 
+            gap: '10px', 
+            marginBottom: '20px',
+            flexWrap: 'wrap'
+          }}>
+            {['All', 'Pending', 'In Progress', 'Completed'].map((status) => (
+              <button
+                key={status}
+                onClick={() => setStatusFilter(status)}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: statusFilter === status ? '#4338ca' : 'white',
+                  color: statusFilter === status ? 'white' : '#4b5563',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: '500',
+                  transition: 'all 0.2s',
+                  boxShadow: statusFilter === status ? '0 2px 4px rgba(0, 0, 0, 0.1)' : 'none'
+                }}
+                onMouseOver={(e) => {
+                  if (statusFilter !== status) {
+                    e.currentTarget.style.backgroundColor = '#f3f4f6';
+                  }
+                }}
+                onMouseOut={(e) => {
+                  if (statusFilter !== status) {
+                    e.currentTarget.style.backgroundColor = 'white';
+                  }
+                }}
+              >
+                {status}
+              </button>
+            ))}
+          </div>
+
+          {filteredPlans.length === 0 ? (
             <div style={{ 
               textAlign: 'center', 
               padding: '40px',
@@ -158,18 +245,20 @@ const Home = () => {
               boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
             }}>
               <p style={{ color: '#6b7280' }}>
-                No plans found. Create your first learning plan!
+                {plans.length === 0 
+                  ? 'No plans found. Create your first learning plan!'
+                  : `No ${statusFilter.toLowerCase()} plans found.`}
               </p>
             </div>
-          ) : (
+          ) : viewMode === 'card' ? (
+            // Card View
             <div style={{ 
               display: 'grid', 
               gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
               gap: '20px'
             }}>
-              {plans.map((plan) => {
+              {filteredPlans.map((plan) => {
                 const planStatus = getPlanStatusFromTopics(plan.topics);
-
                 return (
                   <div 
                     key={plan.planId}
@@ -178,11 +267,21 @@ const Home = () => {
                       padding: '20px',
                       borderRadius: '8px',
                       boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                      transition: 'transform 0.2s, box-shadow 0.2s',
+                      transition: 'all 0.3s ease',
+                      transform: 'translateY(0)',
+                      cursor: 'pointer',
                       ':hover': {
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)'
+                        transform: 'translateY(-8px)',
+                        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.15)'
                       }
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-8px)';
+                      e.currentTarget.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.15)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
                     }}
                   >
                     <div style={{ 
@@ -376,6 +475,141 @@ const Home = () => {
                         onMouseEnter={e => e.currentTarget.style.backgroundColor = '#b91c1c'}
                         onMouseLeave={e => e.currentTarget.style.backgroundColor = '#dc2626'}
                         aria-label="Delete plan"
+                      >
+                        <FaTrash /> Delete
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            // List View
+            <div style={{ 
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px'
+            }}>
+              {filteredPlans.map((plan) => {
+                const planStatus = getPlanStatusFromTopics(plan.topics);
+                return (
+                  <div
+                    key={plan.planId}
+                    style={{
+                      backgroundColor: 'white',
+                      padding: '20px',
+                      borderRadius: '8px',
+                      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                      transition: 'all 0.3s ease',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      gap: '20px'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateX(8px)';
+                      e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.15)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateX(0)';
+                      e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+                    }}
+                  >
+                    <div style={{ flex: 1 }}>
+                      <div style={{ 
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        marginBottom: '8px'
+                      }}>
+                        <h2 style={{ 
+                          color: '#1f2937',
+                          fontSize: '18px',
+                          margin: 0,
+                          fontWeight: '600'
+                        }}>
+                          {plan.planName}
+                        </h2>
+                        <span style={{ 
+                          padding: '4px 8px',
+                          borderRadius: '4px',
+                          backgroundColor: planStatus === 'Completed' ? '#dcfce7' : 
+                                          planStatus === 'In Progress' ? '#dbeafe' : '#fef3c7',
+                          color: planStatus === 'Completed' ? '#166534' : 
+                                 planStatus === 'In Progress' ? '#1e40af' : '#92400e',
+                          fontSize: '14px',
+                          fontWeight: '500'
+                        }}>
+                          {planStatus}
+                        </span>
+                      </div>
+                      <p style={{ 
+                        color: '#4b5563',
+                        marginBottom: '8px',
+                        fontSize: '14px'
+                      }}>
+                        {plan.plandesc}
+                      </p>
+                      <div style={{ 
+                        display: 'flex',
+                        gap: '16px',
+                        fontSize: '13px',
+                        color: '#6b7280'
+                      }}>
+                        <span>Complete Date: {displayDate(plan.completedate)}</span>
+                        <span>Topics: {plan.topics.length}</span>
+                      </div>
+                    </div>
+                    <div style={{ 
+                      display: 'flex',
+                      gap: '8px'
+                    }}>
+                      <Link 
+                        to={`/view/${plan.planId}`}
+                        style={{
+                          backgroundColor: '#10b981',
+                          color: 'white',
+                          padding: '8px 16px',
+                          borderRadius: '4px',
+                          textDecoration: 'none',
+                          fontSize: '14px',
+                          fontWeight: '500'
+                        }}
+                      >
+                        View
+                      </Link>
+                      <Link 
+                        to={`/edit/${plan.planId}`}
+                        style={{
+                          backgroundColor: '#2563eb',
+                          color: 'white',
+                          padding: '8px 16px',
+                          borderRadius: '4px',
+                          textDecoration: 'none',
+                          fontSize: '14px',
+                          fontWeight: '500',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px'
+                        }}
+                      >
+                        <FaEdit /> Edit
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(plan.planId)}
+                        style={{
+                          backgroundColor: '#dc2626',
+                          color: 'white',
+                          padding: '8px 16px',
+                          borderRadius: '4px',
+                          border: 'none',
+                          fontSize: '14px',
+                          fontWeight: '500',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px'
+                        }}
                       >
                         <FaTrash /> Delete
                       </button>
